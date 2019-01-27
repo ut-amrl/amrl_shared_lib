@@ -107,7 +107,7 @@ std::string GetFullFolderPath() {
 
   char cwd[1024] = {0};
   const auto result = getcwd(cwd, sizeof(cwd));
-  DCHECK_NOTNULL(result);
+  CHECK_NOTNULL(result);
   return std::string(cwd) + "/" + std::string(kRandomDirectory);
 }
 
