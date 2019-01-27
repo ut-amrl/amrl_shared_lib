@@ -30,6 +30,10 @@ class Random {
  public:
   Random() : randn_(0, 1.0), randf_(0.0, 1.0) {}
 
+  Random(unsigned long seed): generator_(seed),
+                              randn_(0, 1.0),
+                              randf_(0.0, 1.0) {}
+
   // Generate random numbers between 0 and 1, inclusive.
   double UniformRandom();
 
