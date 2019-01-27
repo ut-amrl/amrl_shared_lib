@@ -26,10 +26,10 @@ INCLUDE_DIRECTORIES(src/)
 
 
 ADD_LIBRARY(shared_library
-            src/util/helpers.cc
-            src/util/pthread_utils.cc
-            src/util/timer.cc
-            src/util/colorize.cc
-            src/util/random.cc
-            src/util/serialization.cc)
+            util/helpers.cc
+            util/pthread_utils.cc
+            util/timer.cc
+            util/colorize.cc
+            util/random.cc
+            util/serialization.cc)
 TARGET_LINK_LIBRARIES(shared_library ${libs})
