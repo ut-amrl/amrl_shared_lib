@@ -21,6 +21,7 @@
 
 #include <inttypes.h>
 #include <time.h>
+#include <stdio.h>
 #include <unistd.h>
 
 #include <algorithm>
