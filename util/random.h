@@ -20,13 +20,13 @@
 //========================================================================
 #include <random>
 #include <thread>
-#include "util/timer.h"
+#include "timer.h"
 
 #ifndef SRC_UTIL_RANDOM_H_
 #define SRC_UTIL_RANDOM_H_
 
 // Constructs a thread safe RNG.
-namespace minutebotrandom {
+namespace util_random {
 class Random {
  public:
   Random();
@@ -50,5 +50,5 @@ class Random {
  private:
   unsigned int thread_rng_seed;
 };
-}  // namespace minutebotrandom
+}  // namespace util_random
 #endif  // SRC_UTIL_RANDOM_H_

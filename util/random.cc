@@ -24,7 +24,7 @@
 using std::thread;
 using math_util::Sq;
 
-namespace minutebotrandom {
+namespace util_random {
 
 Random::Random()
     : thread_rng_seed(std::hash<std::thread::id>()(std::this_thread::get_id()) +
@@ -60,4 +60,4 @@ float Random::Gaussian(const float mean, const float stddev) {
 
 unsigned int Random::GetSeedData() const { return thread_rng_seed; }
 
-}  // namespace minutebotrandom
+}  // namespace util_random

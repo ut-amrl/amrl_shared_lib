@@ -6,8 +6,7 @@ SET(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 SET(libs glog pthread)
 
-INCLUDE_DIRECTORIES(src/)
-
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11")
 
 ADD_LIBRARY(amrl-shared-lib
             util/helpers.cc
