@@ -4,4 +4,4 @@ compiler:
   - gcc
 before_install:
   - sudo apt-get install -y libgoogle-glog-dev cmake build-essential
-script: make
+script: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release && make
