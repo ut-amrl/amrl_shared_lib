@@ -1,4 +1,4 @@
-// Copyright 2017 kvedder@umass.edu
+// Copyright 2017-2019 kvedder@umass.edu, joydeepb&cs.umass.edu
 // College of Information and Computer Sciences,
 // University of Massachusetts Amherst
 //
@@ -18,20 +18,17 @@
 // Version 3 in the file COPYING that came with this distribution.
 // If not, see <http://www.gnu.org/licenses/>.
 //========================================================================
+
 #include <random>
-#include <thread>
-#include "timer.h"
 
 #ifndef SRC_UTIL_RANDOM_H_
 #define SRC_UTIL_RANDOM_H_
 
-// Constructs a thread safe RNG.
+// Your one-stop shop for generating random numbers.
 namespace util_random {
 class Random {
  public:
-  Random();
-  explicit Random(const size_t noise);
-  ~Random();
+  Random() : randn_(0, 1.0), randf_(0.0, 1.0) {}
 
   // Generate random numbers between 0 and 1, inclusive.
   double UniformRandom();
@@ -40,15 +37,19 @@ class Random {
   double UniformRandom(double a, double b);
 
   // Generate random numbers between min, inclusive, and max, exclusive.
-  int RandomInt(size_t min, size_t max);
+  template <typename T>
+  T RandomInt(const T min, const T max) {
+    std::uniform_int_distribution<T> dist(min, max);
+    return dist(generator_);
+  }
 
   // Return a random value drawn from a Normal distribution.
-  float Gaussian(const float mean, const float stddev);
-
-  unsigned int GetSeedData() const;
+  double Gaussian(const double mean, const double stddev);
 
  private:
-  unsigned int thread_rng_seed;
+  std::default_random_engine generator_;
+  std::normal_distribution<double> randn_;
+  std::uniform_real_distribution<double> randf_;
 };
 }  // namespace util_random
 #endif  // SRC_UTIL_RANDOM_H_
