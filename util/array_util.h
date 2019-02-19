@@ -21,12 +21,13 @@
 #include <array>
 #include <limits>
 #include <vector>
-#include "constants/constants.h"
 
 #ifndef SRC_UTIL_ARRAY_UTIL_H_
 #define SRC_UTIL_ARRAY_UTIL_H_
 
 namespace array_util {
+
+const bool kProduction = false;
 
 template <size_t N, class T>
 std::array<T, N> MakeArray(const T& v) {

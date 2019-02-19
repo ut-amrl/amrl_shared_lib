@@ -27,7 +27,6 @@
 #include <limits>
 #include <utility>
 
-#include "constants/constants.h"
 #include "eigen3/Eigen/Dense"
 #include "eigen3/Eigen/Geometry"
 #include "math/math_util.h"
@@ -38,6 +37,8 @@ using std::cout;
 using std::endl;
 
 namespace geometry {
+
+const float kEpsilon = 1e-6;
 
 // Returns a unit vector in the direction of the given angle.
 template <typename T>

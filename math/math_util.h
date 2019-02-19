@@ -22,8 +22,6 @@
 #include <array>
 #include <cmath>
 
-#include "glog/logging.h"
-
 #ifndef SRC_MATH_MATH_UTIL_H_
 #define SRC_MATH_MATH_UTIL_H_
 
