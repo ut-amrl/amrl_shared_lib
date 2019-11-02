@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/umass-amrl/amrl_shared_lib.svg?branch=master)](https://travis-ci.com/umass-amrl/amrl_shared_lib)
+[![Build Status](https://travis-ci.com/ut-amrl/amrl_shared_lib.svg?branch=master)](https://travis-ci.com/ut-amrl/amrl_shared_lib)
 
 # amrl_shared_lib
 Shared library for all AMRL C++ projects
