@@ -63,6 +63,31 @@ T AngleDist(T a0, T a1) {
   return std::fabs<T>(AngleMod<T>(a0 - a1));
 }
 
+// Check if angle is between min and max angle, moving in a counterclockwise
+// direction from min_angle to max_angle.
+ template <typename T>
+ bool IsAngleBetween(T query,
+                     T start_angle,
+                     T end_angle,
+                     const int rotation_sign) {
+  if (rotation_sign == 0) {
+    return (query == start_angle && start_angle == end_angle);
+  } else if (rotation_sign == 1) {
+    if (start_angle < end_angle) {
+      // No wrap around.
+      return (query <= end_angle) && (query >= start_angle);
+    }
+
+    return (query > start_angle) || (query < end_angle);
+  } else {
+    // rotation_sign == -1
+    if (start_angle > end_angle) {
+      return (query <= start_angle) && (query >= end_angle);
+    }
+    return (query > end_angle) || (query < start_angle);
+  }
+}
+
 template <typename T>
 T Sq(const T& x) {
   return (x * x);
