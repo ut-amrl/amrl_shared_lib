@@ -9,7 +9,6 @@ SET(libs glog pthread)
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11")
 
 ADD_LIBRARY(amrl-shared-lib
-            ros/ros_helpers.cc
             util/helpers.cc
             util/pthread_utils.cc
             util/timer.cc
