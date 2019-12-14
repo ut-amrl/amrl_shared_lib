@@ -1,6 +1,6 @@
-// Copyright 2019 joydeepb@cs.utexas.edu
-// Computer Science Department
-// University of Texas at Austin
+// Copyright 2019 kvedder@seas.upenn.edu
+// School of Engineering and Applied Sciences,
+// University of Pennsylvania
 //
 //
 // This software is free: you can redistribute it and/or modify
@@ -17,25 +17,10 @@
 // If not, see <http://www.gnu.org/licenses/>.
 // ========================================================================
 
-#include <string>
+#include <gtest/gtest.h>
 
-#include "ros/ros.h"
-#include "std_msgs/Header.h"
-#include "visualization_msgs/Marker.h"
-
-#include "ros_helpers.h"
-
-namespace ros_helpers {
-
-void InitRosHeader(const std::string& frame_id, std_msgs::Header* h) {
-  h->seq = 0;
-  h->frame_id = frame_id;
-  h->stamp = ros::Time::now();
+int main(int argc, char **argv) {
+  ::testing::InitGoogleTest(&argc, argv);
+  return RUN_ALL_TESTS();
 }
 
-void ClearMarker(visualization_msgs::Marker* m) {
-  m->points.clear();
-  m->colors.clear();
-}
-
-}  // namespace ros_helpers

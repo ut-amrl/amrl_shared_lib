@@ -37,9 +37,17 @@
 
 namespace ros_helpers {
 
-void InitRosHeader(const std::string& frame_id, std_msgs::Header* h);
+inline void InitRosHeader(const std::string& frame_id,
+                          std_msgs::Header* h) {
+  h->seq = 0;
+  h->frame_id = frame_id;
+  h->stamp = ros::Time::now();
+}
 
-void ClearMarker(visualization_msgs::Marker* m);
+inline void ClearMarker(visualization_msgs::Marker* m) {
+  m->points.clear();
+  m->colors.clear();
+}
 
 template<typename Tr, typename Tg, typename Tb, typename Ta>
 std_msgs::ColorRGBA RosColor(const Tr& r,

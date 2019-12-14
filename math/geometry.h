@@ -152,23 +152,74 @@ bool IsBetween(const Eigen::Matrix<T, 2, 1>& a, const Eigen::Matrix<T, 2, 1>& b,
   return dist <= epsilon;
 }
 
-// Checks to see if a line line collision exists between the lines given
-// by (a1-a0) and (b1-b0).
+// Checks to see if two line segments, (a1-a0) and (b1-b0), cross or touch.
+// "Collision" == "crossing" || "touching"
 template <typename T>
 bool CheckLineLineCollision(
     const Eigen::Matrix<T, 2, 1>& a0, const Eigen::Matrix<T, 2, 1>& a1,
     const Eigen::Matrix<T, 2, 1>& b0, const Eigen::Matrix<T, 2, 1>& b1) {
   const Eigen::Matrix<T, 2, 1> a1a0 = a1 - a0;
+  const Eigen::Matrix<T, 2, 1> a0a1 = -a1a0;
   const Eigen::Matrix<T, 2, 1> b0a0 = b0 - a0;
   const Eigen::Matrix<T, 2, 1> b1a0 = b1 - a0;
+  const Eigen::Matrix<T, 2, 1> b1a1 = b1 - a1;
   const Eigen::Matrix<T, 2, 1> b1b0 = b1 - b0;
+  const Eigen::Matrix<T, 2, 1> b0b1 = -b1b0;
   const Eigen::Matrix<T, 2, 1> a0b0 = a0 - b0;
   const Eigen::Matrix<T, 2, 1> a1b0 = a1 - b0;
-  return
-      (math_util::Sign(Cross(a1a0, b0a0)) !=
-          math_util::Sign(Cross(a1a0, b1a0))) &&
-      (math_util::Sign(Cross(b1b0, a0b0)) !=
-          math_util::Sign(Cross(b1b0, a1b0)));
+  const Eigen::Matrix<T, 2, 1> b0a1 = -a1b0;
+  const Eigen::Matrix<T, 2, 1> a0b1 = -b1a0;
+  const Eigen::Matrix<T, 2, 1> a1b1 = a1 - b1;
+  const int s1 = math_util::Sign(Cross(a1a0, b0a0));
+  const int s2 = math_util::Sign(Cross(a1a0, b1a0));
+  const int s3 = math_util::Sign(Cross(b1b0, a0b0));
+  const int s4 = math_util::Sign(Cross(b1b0, a1b0));
+  // Points on opposite sides for both lines.
+  if ((s1 != s2) && (s3 != s4)) {
+    return true;
+  }
+  // Line is on the same side of another line.
+  if ((s1 + s2 != 0) || (s3 + s4 != 0)) {
+    return false;
+  }
+
+  // Colinear.
+  const T a1a0_dot_b0a0 = a1a0.dot(b0a0);
+  if (a1a0_dot_b0a0 >= 0 && a1a0_dot_b0a0 <= a1a0.squaredNorm()) {
+    return true;
+  }
+  const T a0a1_dot_b0a1 = a0a1.dot(b0a1);
+  if (a0a1_dot_b0a1 >= 0 && a0a1_dot_b0a1 <= a0a1.squaredNorm()) {
+    return true;
+  }
+
+  const T a1a0_dot_b1a0 = a1a0.dot(b1a0);
+  if (a1a0_dot_b1a0 >= 0 && a1a0_dot_b1a0 <= a1a0.squaredNorm()) {
+    return true;
+  }
+  const T a0a1_dot_b1a1 = a0a1.dot(b1a1);
+  if (a0a1_dot_b1a1 >= 0 && a0a1_dot_b1a1 <= a0a1.squaredNorm()) {
+    return true;
+  }
+
+  const T b1b0_dot_a0b0 = b1b0.dot(a0b0);
+  if (b1b0_dot_a0b0 >= 0 && b1b0_dot_a0b0 <= b1b0.squaredNorm()) {
+    return true;
+  }
+  const T b0b1_dot_a0b1 = b0b1.dot(a0b1);
+  if (b0b1_dot_a0b1 >= 0 && b0b1_dot_a0b1 <= b0b1.squaredNorm()) {
+    return true;
+  }
+
+  const T b1b0_dot_a1b0 = b1b0.dot(a1b0);
+  if (b1b0_dot_a1b0 >= 0 && b1b0_dot_a1b0 <= b1b0.squaredNorm()) {
+    return true;
+  }
+  const T b0b1_dot_a1b1 = b0b1.dot(a1b1);
+  if (b0b1_dot_a1b1 >= 0 && b0b1_dot_a1b1 <= b0b1.squaredNorm()) {
+    return true;
+  }
+  return false;
 }
 
 // Returns the point of intersection between the lines given by (a1-a0) and

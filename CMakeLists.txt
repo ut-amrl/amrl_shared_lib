@@ -9,7 +9,6 @@ SET(libs glog pthread)
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11")
 
 ADD_LIBRARY(amrl-shared-lib
-            ros/ros_helpers.cc
             util/helpers.cc
             util/pthread_utils.cc
             util/timer.cc
@@ -17,3 +16,9 @@ ADD_LIBRARY(amrl-shared-lib
             util/random.cc
             util/serialization.cc)
 TARGET_LINK_LIBRARIES(amrl-shared-lib ${libs})
+
+
+ADD_EXECUTABLE(unit_tests
+               tests/tests_main.cc
+               tests/math/math_tests.cc)
+TARGET_LINK_LIBRARIES(unit_tests amrl-shared-lib gtest ${libs})

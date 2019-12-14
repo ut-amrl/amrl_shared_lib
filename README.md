@@ -6,7 +6,7 @@ Shared library for all AMRL C++ projects
 ## Build
 1. Install dependencies:
    ```
-   sudo apt-get install libgoogle-glog-dev cmake build-essential
+   sudo apt-get install libgtest-dev libgoogle-glog-dev cmake build-essential
    ```
 1. Compile
    ```
