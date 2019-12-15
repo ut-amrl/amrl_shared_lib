@@ -616,36 +616,6 @@ T MinDistanceLineArc(const Eigen::Matrix<T, 2, 1>& l0,
   return min_distance;
 }
 
-// Returns the Euclidean distance between the two input points
-template <typename T>
-T EuclideanDistance(const Eigen::Matrix<T, 2, 1>& pos1,
-                    const Eigen::Matrix<T, 2, 1>& pos2) {
-  if (fabs(pos1.x() - pos2.x()) > 1e-10 || fabs(pos1.y() - pos2.y()) > 1e-10) {
-    return (pos2 - pos1).norm();
-  } else {
-    return 0;
-  }
-}
-
-template <typename T>
-T SquaredDistance(const Eigen::Matrix<T, 2, 1>& pos1,
-                  const Eigen::Matrix<T, 2, 1>& pos2) {
-  if (fabs(pos1.x() - pos2.x()) > 1e-10 || fabs(pos1.y() - pos2.y()) > 1e-10) {
-    return (pos2 - pos1).squaredNorm();
-  } else {
-    return 0;
-  }
-}
-
-template <typename T>
-T SafeVectorNorm(const Eigen::Matrix<T, 2, 1>& vector) {
-  if (fabs(vector.x()) > 1e-10 || fabs(vector.y()) > 1e-10) {
-    return vector.norm();
-  } else {
-    return 0;
-  }
-}
-
 // Returns the scalar projection of vector1 onto vector2
 // vector2 must be nonzero
 template <typename T>
