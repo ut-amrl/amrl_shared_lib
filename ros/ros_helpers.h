@@ -17,8 +17,10 @@
 // If not, see <http://www.gnu.org/licenses/>.
 // ========================================================================
 
+// C++ headers.
 #include <string>
 
+// C++ Library headers.
 #include "eigen3/Eigen/Core"
 #include "geometry_msgs/Point.h"
 #include "geometry_msgs/Vector3.h"
@@ -26,6 +28,9 @@
 #include "std_msgs/ColorRGBA.h"
 #include "std_msgs/Header.h"
 #include "visualization_msgs/Marker.h"
+
+// Custom headers.
+#include "math/math_util.h"
 
 #ifndef ROS_HELPERS_H
 #define ROS_HELPERS_H
@@ -130,6 +135,37 @@ geometry_msgs::Point Eigen2DToRosPoint(const Eigen::DenseBase<Derived>& v) {
   p.y = v[1];
   p.z = 0;
   return p;
+}
+
+template <typename Derived>
+void DrawEigen2DLine(const Eigen::DenseBase<Derived>& v1,
+                     const Eigen::DenseBase<Derived>& v2,
+                     visualization_msgs::Marker* msg) {
+  msg->points.push_back(Eigen2DToRosPoint<Derived>(v1));
+  msg->points.push_back(Eigen2DToRosPoint<Derived>(v2));
+}
+
+template <typename Derived>
+void DrawEigen2DLine(const Eigen::DenseBase<Derived>& v1,
+                     const Eigen::DenseBase<Derived>& v2,
+                     const std_msgs::ColorRGBA& c,
+                     visualization_msgs::Marker* msg) {
+  msg->points.push_back(Eigen2DToRosPoint<Derived>(v1));
+  msg->points.push_back(Eigen2DToRosPoint<Derived>(v2));
+  msg->colors.push_back(c);
+  msg->colors.push_back(c);
+}
+
+template <typename Derived>
+void DrawEigen2DLine(const Eigen::DenseBase<Derived>& v1,
+                     const Eigen::DenseBase<Derived>& v2,
+                     const std_msgs::ColorRGBA& c1,
+                     const std_msgs::ColorRGBA& c2,
+                     visualization_msgs::Marker* msg) {
+  msg->points.push_back(Eigen2DToRosPoint<Derived>(v1));
+  msg->points.push_back(Eigen2DToRosPoint<Derived>(v2));
+  msg->colors.push_back(c1);
+  msg->colors.push_back(c2);
 }
 
 }  // namespace ros_helpers

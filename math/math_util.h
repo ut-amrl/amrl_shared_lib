@@ -161,6 +161,21 @@ unsigned int SolveQuadratic(const T& a, const T& b, const T& c, T* r0, T* r1) {
   return 2;
 }
 
+// Bound the value to the minimum and maximum specified.
+template <typename T>
+void Bound(const T& min_val, const T& max_val, T* x) {
+  if ((*x) > max_val) *x = max_val;
+  if ((*x) < min_val) *x = min_val;
+}
+
+// Bound the value to lie within +- limit.
+template <typename T>
+void AbsBound(const T& limit, T* x) {
+  if ((*x) > limit || (*x) < limit) {
+    *x = limit;
+  }
+}
+
 // returns the +/- sign of a numerical value, 0 if value is 0
 template <typename T>
 int Sign(T val) {
