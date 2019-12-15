@@ -13,7 +13,8 @@ ADD_LIBRARY(amrl-shared-lib
             util/pthread_utils.cc
             util/timer.cc
             util/random.cc
-            util/serialization.cc)
+            util/serialization.cc
+            util/terminal_colors.cc)
 TARGET_LINK_LIBRARIES(amrl-shared-lib ${libs})
 
 
