@@ -14,7 +14,8 @@ ADD_LIBRARY(amrl-shared-lib
             util/timer.cc
             util/colorize.cc
             util/random.cc
-            util/serialization.cc)
+            util/serialization.cc
+            util/terminal_colors.cc)
 TARGET_LINK_LIBRARIES(amrl-shared-lib ${libs})
 
 
