@@ -117,8 +117,11 @@ struct Line {
     if (Cross<T>(d2, p1 - p2) * Cross<T>(d2, p0 - p2) > 0.0) return false;
     // Okay, the line segments definitely intersect.
     const T d = Cross<T>(d2, -d1);
+
+#if !defined(NDEBUG)
     // Just an extra check, should never happen
-    DCHECK_NE(d, T(0));
+    if (d == T(0)) { return false; }
+#endif  // NDEBUG
     const T tb = Cross<T>(p0 -p2, p0-p1) / d;
     *intersection = p2 + tb * d2;
     return true;
