@@ -19,5 +19,6 @@ TARGET_LINK_LIBRARIES(amrl-shared-lib ${libs})
 
 
 ADD_EXECUTABLE(unit_tests
+               tests/math/line2d_tests.cc
                tests/math/math_tests.cc)
 TARGET_LINK_LIBRARIES(unit_tests amrl-shared-lib gtest gtest_main ${libs})
