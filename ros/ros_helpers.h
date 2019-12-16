@@ -168,6 +168,21 @@ void DrawEigen2DLine(const Eigen::DenseBase<Derived>& v1,
   msg->colors.push_back(c2);
 }
 
+template <typename Vector2>
+void DrawCross(const Vector2& v,
+              const float size,
+              const std_msgs::ColorRGBA& color,
+              visualization_msgs::Marker* msg) {
+  msg->points.push_back(Eigen2DToRosPoint(v - Vector2(size, size)));
+  msg->points.push_back(Eigen2DToRosPoint(v + Vector2(size, size)));
+  msg->points.push_back(Eigen2DToRosPoint(v - Vector2(size, -size)));
+  msg->points.push_back(Eigen2DToRosPoint(v + Vector2(size, -size)));
+  msg->colors.push_back(color);
+  msg->colors.push_back(color);
+  msg->colors.push_back(color);
+  msg->colors.push_back(color);
+}
+
 }  // namespace ros_helpers
 
 #endif  // ROS_HELPERS_H
