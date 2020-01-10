@@ -67,6 +67,40 @@ struct Line {
     return Vector2T(-d.y(), d.x());
   }
 
+  T ClosestApproach(const Vector2T& p2, const Vector2T& p3) const {
+    const Vector2T d = Dir();
+    const T l = Length();
+    const Vector2T p20 = p2 - p0;
+    const Vector2T p30 = p3 - p0;
+    const T p2d = d.dot(p20);
+    const T p3d = d.dot(p30);
+    if (p2d <= T(0) && p3d <= T(0)) {
+      return std::min<T>(p20.norm(), p30.norm());
+    } else if (p2d >= l && p3d >= l) {
+      return std::min<T>((p2 - p1).norm(), (p3 - p1).norm());
+    }
+    const Vector2T n = UnitNormal();
+    return std::min<T>(std::abs<T>(n.dot(p20)), std::abs<T>(n.dot(p30)));
+  }
+
+  T ClosestApproach(const Line<T>& l) const {
+    return ClosestApproach(l.p0, l.p1);
+  }
+
+  bool CloserThan(const Vector2T& p2,
+                  const Vector2T& p3,
+                  const T& margin) const {
+    // Bounding-box broad phase check.
+    if (std::min(p0.x(), p1.x()) > std::max(p2.x(), p3.x()) + margin ||
+        std::max(p0.x(), p1.x()) < std::min(p2.x(), p3.x()) - margin ||
+        std::min(p0.y(), p1.y()) > std::max(p2.y(), p3.y()) + margin ||
+        std::max(p0.y(), p1.y()) < std::min(p2.y(), p3.y()) - margin) {
+      return false;
+    }
+    if (Intersects(p2, p3)) return true;
+    return (ClosestApproach(p2, p3) < margin);
+  }
+
   bool Crosses(const Vector2T& p2,
                const Vector2T& p3) const {
     // Bounding-box broad phase check.

@@ -81,3 +81,11 @@ TEST(Line2D, JumboSuite) {
   EXPECT_FALSE(line2f(10, 10, 10, 10).Intersects(line2f(30, 4, 30, 10)));
   EXPECT_TRUE(line2f(0, 200, 300, 200).Intersects(line2f(100, 300, 100, 200)));
 }
+
+TEST(Line2D, ClosestApproach) {
+  EXPECT_FLOAT_EQ(line2f(1, 0, 0, 1).ClosestApproach(
+      Vector2f(0, 0), Vector2f(-1, -1)), 1.0f / sqrt(2.0f));
+
+  EXPECT_FLOAT_EQ(line2f(1, 1, 10, 1).ClosestApproach(
+      Vector2f(-100, 0), Vector2f(-1, -1)), sqrt(8.0f));
+}
