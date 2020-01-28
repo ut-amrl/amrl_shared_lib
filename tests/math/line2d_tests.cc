@@ -80,6 +80,10 @@ TEST(Line2D, JumboSuite) {
   EXPECT_TRUE(line2f(0, 0, 0, 5).Intersects(line2f(0, 5, 0, 10)));
   EXPECT_FALSE(line2f(10, 10, 10, 10).Intersects(line2f(30, 4, 30, 10)));
   EXPECT_TRUE(line2f(0, 200, 300, 200).Intersects(line2f(100, 300, 100, 200)));
+  EXPECT_TRUE(line2f(0, 0, 0, 0).Intersects(line2f(0, 0, 0, 0)));
+  EXPECT_FALSE(line2f(0, 0, 0, 0).Intersects(line2f(0, 3, 0, 3)));
+  EXPECT_FALSE(line2f(0, 0, 0, 0.4).Intersects(line2f(0, 3, 0, 3)));
+  EXPECT_FALSE(line2f(0.4, 0, 0, 0).Intersects(line2f(3, 0, 3, 0)));
 }
 
 TEST(Line2D, ClosestApproach) {
