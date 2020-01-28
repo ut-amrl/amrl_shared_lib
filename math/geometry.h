@@ -182,41 +182,54 @@ bool CheckLineLineCollision(
     return false;
   }
 
+  const bool a1a0_is_point = (a1a0 == Eigen::Matrix<T, 2, 1>::Zero());
+  const bool b1b0_is_point = (b1b0 == Eigen::Matrix<T, 2, 1>::Zero());
+
+  if (a1a0_is_point && b1b0_is_point) {
+    if (a1 == b1) {
+      return true;
+    }
+  }
+
   // Colinear.
-  const T a1a0_dot_b0a0 = a1a0.dot(b0a0);
-  if (a1a0_dot_b0a0 >= 0 && a1a0_dot_b0a0 <= a1a0.squaredNorm()) {
-    return true;
-  }
-  const T a0a1_dot_b0a1 = a0a1.dot(b0a1);
-  if (a0a1_dot_b0a1 >= 0 && a0a1_dot_b0a1 <= a0a1.squaredNorm()) {
-    return true;
+  if (!a1a0_is_point) {
+    const T a1a0_dot_b0a0 = a1a0.dot(b0a0);
+    if (a1a0_dot_b0a0 >= 0 && a1a0_dot_b0a0 <= a1a0.squaredNorm()) {
+      return true;
+    }
+    const T a0a1_dot_b0a1 = a0a1.dot(b0a1);
+    if (a0a1_dot_b0a1 >= 0 && a0a1_dot_b0a1 <= a0a1.squaredNorm()) {
+      return true;
+    }
+
+    const T a1a0_dot_b1a0 = a1a0.dot(b1a0);
+    if (a1a0_dot_b1a0 >= 0 && a1a0_dot_b1a0 <= a1a0.squaredNorm()) {
+      return true;
+    }
+    const T a0a1_dot_b1a1 = a0a1.dot(b1a1);
+    if (a0a1_dot_b1a1 >= 0 && a0a1_dot_b1a1 <= a0a1.squaredNorm()) {
+      return true;
+    }
   }
 
-  const T a1a0_dot_b1a0 = a1a0.dot(b1a0);
-  if (a1a0_dot_b1a0 >= 0 && a1a0_dot_b1a0 <= a1a0.squaredNorm()) {
-    return true;
-  }
-  const T a0a1_dot_b1a1 = a0a1.dot(b1a1);
-  if (a0a1_dot_b1a1 >= 0 && a0a1_dot_b1a1 <= a0a1.squaredNorm()) {
-    return true;
-  }
+  if (!b1b0_is_point) {
+    const T b1b0_dot_a0b0 = b1b0.dot(a0b0);
+    if (b1b0_dot_a0b0 >= 0 && b1b0_dot_a0b0 <= b1b0.squaredNorm()) {
+      return true;
+    }
+    const T b0b1_dot_a0b1 = b0b1.dot(a0b1);
+    if (b0b1_dot_a0b1 >= 0 && b0b1_dot_a0b1 <= b0b1.squaredNorm()) {
+      return true;
+    }
 
-  const T b1b0_dot_a0b0 = b1b0.dot(a0b0);
-  if (b1b0_dot_a0b0 >= 0 && b1b0_dot_a0b0 <= b1b0.squaredNorm()) {
-    return true;
-  }
-  const T b0b1_dot_a0b1 = b0b1.dot(a0b1);
-  if (b0b1_dot_a0b1 >= 0 && b0b1_dot_a0b1 <= b0b1.squaredNorm()) {
-    return true;
-  }
-
-  const T b1b0_dot_a1b0 = b1b0.dot(a1b0);
-  if (b1b0_dot_a1b0 >= 0 && b1b0_dot_a1b0 <= b1b0.squaredNorm()) {
-    return true;
-  }
-  const T b0b1_dot_a1b1 = b0b1.dot(a1b1);
-  if (b0b1_dot_a1b1 >= 0 && b0b1_dot_a1b1 <= b0b1.squaredNorm()) {
-    return true;
+    const T b1b0_dot_a1b0 = b1b0.dot(a1b0);
+    if (b1b0_dot_a1b0 >= 0 && b1b0_dot_a1b0 <= b1b0.squaredNorm()) {
+      return true;
+    }
+    const T b0b1_dot_a1b1 = b0b1.dot(a1b1);
+    if (b0b1_dot_a1b1 >= 0 && b0b1_dot_a1b1 <= b0b1.squaredNorm()) {
+      return true;
+    }
   }
   return false;
 }

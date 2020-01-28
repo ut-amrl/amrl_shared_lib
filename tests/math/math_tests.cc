@@ -152,6 +152,48 @@ TEST(CheckLineLineCollision, Collides) {
     const Eigen::Vector2f p4(100, 200);
     EXPECT_TRUE(geometry::CheckLineLineCollision(p1, p2, p3, p4));
   }
+  {
+    const Eigen::Vector2f p1(0, 0);
+    const Eigen::Vector2f p2(0.396010, 0);
+    const Eigen::Vector2f p3(2.927000, 0);
+    const Eigen::Vector2f p4(2.927000, 0);
+    EXPECT_FALSE(geometry::CheckLineLineCollision(p1, p2, p3, p4));
+  }
+  {
+    const Eigen::Vector2f p1(0, 0);
+    const Eigen::Vector2f p2(0.396010, 0);
+    const Eigen::Vector2f p3(2.927000, 0);
+    const Eigen::Vector2f p4(2.927000, 0);
+    EXPECT_FALSE(geometry::CheckLineLineCollision(p3, p4, p1, p2));
+  }
+  {
+    const Eigen::Vector2f p1(0, 0);
+    const Eigen::Vector2f p2(0, 0.396010);
+    const Eigen::Vector2f p3(0, 2.927000);
+    const Eigen::Vector2f p4(0, 2.927000);
+    EXPECT_FALSE(geometry::CheckLineLineCollision(p1, p2, p3, p4));
+  }
+  {
+    const Eigen::Vector2f p1(0, 0);
+    const Eigen::Vector2f p2(0, 0.396010);
+    const Eigen::Vector2f p3(0, 2.927000);
+    const Eigen::Vector2f p4(0, 2.927000);
+    EXPECT_FALSE(geometry::CheckLineLineCollision(p3, p4, p1, p2));
+  }
+  {
+    const Eigen::Vector2f p1(0, 0);
+    const Eigen::Vector2f p2(0, 0);
+    const Eigen::Vector2f p3(0, 2.927000);
+    const Eigen::Vector2f p4(0, 2.927000);
+    EXPECT_FALSE(geometry::CheckLineLineCollision(p3, p4, p1, p2));
+  }
+  {
+    const Eigen::Vector2f p1(0, 0);
+    const Eigen::Vector2f p2(0, 0);
+    const Eigen::Vector2f p3(0, 0);
+    const Eigen::Vector2f p4(0, 0);
+    EXPECT_TRUE(geometry::CheckLineLineCollision(p3, p4, p1, p2));
+  }
 }
 
 TEST(LineLineIntersection, CollidesAndIntersection) {
