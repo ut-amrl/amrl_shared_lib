@@ -58,8 +58,8 @@ T Cross(const Eigen::Matrix<T, 2, 1>& v1, const Eigen::Matrix<T, 2, 1>& v2) {
   return (v1.x() * v2.y() - v2.x() * v1.y());
 }
 
-template <typename T>
-Eigen::Matrix<T, 2, 1> GetNormalizedOrZero(const Eigen::Matrix<T, 2, 1>& vec) {
+template <typename T, int N>
+Eigen::Matrix<T, N, 1> GetNormalizedOrZero(const Eigen::Matrix<T, N, 1>& vec) {
   const auto norm = vec.template lpNorm<1>();
   if (norm == 0) {
     return vec;
@@ -68,8 +68,8 @@ Eigen::Matrix<T, 2, 1> GetNormalizedOrZero(const Eigen::Matrix<T, 2, 1>& vec) {
   }
 }
 
-template <typename T>
-T GetNormOrZero(const Eigen::Matrix<T, 2, 1>& vec) {
+template <typename T, int N>
+T GetNormOrZero(const Eigen::Matrix<T, N, 1>& vec) {
   const auto norm = vec.template lpNorm<1>();
   if (norm == T(0)) {
     return 0;
