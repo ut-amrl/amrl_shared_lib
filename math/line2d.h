@@ -197,9 +197,9 @@ struct Line {
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
-typedef Line<float> line2f;
-typedef Line<double> line2d;
-typedef Line<int> line2i;
+typedef Line<float> Line2f;
+typedef Line<double> Line2d;
+typedef Line<int> Line2i;
 
 }  // namespace geometry
 
