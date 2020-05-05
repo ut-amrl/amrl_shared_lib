@@ -25,7 +25,9 @@
 #ifndef SRC_MATH_MATH_UTIL_H_
 #define SRC_MATH_MATH_UTIL_H_
 
+#ifndef M_2PI
 #define M_2PI (2.0 * M_PI)
+#endif  // M_2PI
 
 namespace math_util {
 
@@ -166,6 +168,14 @@ template <typename T>
 void Bound(const T& min_val, const T& max_val, T* x) {
   if ((*x) > max_val) *x = max_val;
   if ((*x) < min_val) *x = min_val;
+}
+
+// Bound the value to the minimum and maximum specified.
+template <typename T>
+T Bound(const T& min_val, const T& max_val, const T& x) {
+  if (x > max_val) return max_val;
+  if (x < min_val) return min_val;
+  return x;
 }
 
 // Bound the value to lie within +- limit.

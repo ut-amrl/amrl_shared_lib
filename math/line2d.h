@@ -26,6 +26,7 @@
 #include "eigen3/Eigen/Geometry"
 
 #include "math/geometry.h"
+#include "math/math_util.h"
 
 #ifndef LINE2D_H
 #define LINE2D_H
@@ -85,6 +86,17 @@ struct Line {
 
   T ClosestApproach(const Line<T>& l) const {
     return ClosestApproach(l.p0, l.p1);
+  }
+
+  T Distance(const Vector2T& p) const {
+    const Vector2T dir = Dir();
+    const T x = dir.dot(p - p0);
+    if (x <= T(0)) {
+      return (p - p0).norm();
+    } else if (math_util::Sq(x) > dir.squaredNorm()) {
+      return (p - p1).norm();
+    }
+    return std::abs<T>(geometry::Perp(dir).dot(p - p0));
   }
 
   bool CloserThan(const Vector2T& p2,
@@ -170,6 +182,11 @@ struct Line {
 
   bool Crosses(const Line<T>& l2) const {
     return Crosses(l2.p0, l2.p1);
+  }
+
+  Vector2T Projection(const Vector2T& p) const {
+    const Vector2T dir = Dir();
+    return p0 + dir * dir.dot(p - p0);
   }
 
   bool RayIntersects(const Vector2T& p, const Vector2T& dir) const {
