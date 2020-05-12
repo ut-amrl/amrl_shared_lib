@@ -93,7 +93,7 @@ struct Line {
     const T x = dir.dot(p - p0);
     if (x <= T(0)) {
       return (p - p0).norm();
-    } else if (math_util::Sq(x) > dir.squaredNorm()) {
+    } else if (math_util::Sq(x) > (p1 - p0).squaredNorm()) {
       return (p - p1).norm();
     }
     return std::abs<T>(geometry::Perp(dir).dot(p - p0));

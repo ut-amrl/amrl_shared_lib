@@ -103,4 +103,7 @@ TEST(Line2D, Distance) {
 
   EXPECT_FLOAT_EQ(Line2f(1, 1, 10, 1).Distance(
       Vector2f(11, 2)), sqrt(2.0f));
+
+  EXPECT_FLOAT_EQ(Line2f(1, 1, 10, 1).Distance(
+      Vector2f(6, 2)), 1.0);
 }
