@@ -31,10 +31,12 @@
 
 namespace math_util {
 
-// Convert angle in radians to degrees.
+// Clamp value to min and max.
 template <typename T>
-T Clamp(const T value, const T min, const T max) {
-  return std::max(min, std::min(value, max));
+T Clamp(const T value, const T min_value, const T max_value) {
+  if (value < min_value) return min_value;
+  if (value > max_value) return max_value;
+  return value;
 }
 
 // Convert angle in radians to degrees.
@@ -168,14 +170,6 @@ template <typename T>
 void Bound(const T& min_val, const T& max_val, T* x) {
   if ((*x) > max_val) *x = max_val;
   if ((*x) < min_val) *x = min_val;
-}
-
-// Bound the value to the minimum and maximum specified.
-template <typename T>
-T Bound(const T& min_val, const T& max_val, const T& x) {
-  if (x > max_val) return max_val;
-  if (x < min_val) return min_val;
-  return x;
 }
 
 // Bound the value to lie within +- limit.
