@@ -2,6 +2,9 @@
 // College of Information and Computer Sciences,
 // University of Massachusetts Amherst
 //
+// Copyright 2020 kvedder@seas.upenn.edu
+// School of Engineering and Applied Sciences,
+// University of Pennsylvania
 //
 // This software is free: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License Version 3,
@@ -34,6 +37,34 @@ std::array<T, N> MakeArray(const T& v) {
   std::array<T, N> ret;
   ret.fill(v);
   return ret;
+}
+
+template <size_t N, class T>
+size_t ArgMin(const std::array<T, N>& v) {
+  if (N <= 0) {
+    return 0;
+  }
+  size_t idx = 0;
+  for (size_t i = 1; i < v.size(); ++i) {
+    if (v[idx] > v[i]) {
+      idx = i;
+    }
+  }
+  return idx;
+}
+
+template <size_t N, class T>
+size_t ArgMax(const std::array<T, N>& v) {
+  if (N <= 0) {
+    return 0;
+  }
+  size_t idx = 0;
+  for (size_t i = 1; i < v.size(); ++i) {
+    if (v[idx] < v[i]) {
+      idx = i;
+    }
+  }
+  return idx;
 }
 
 template <size_t N, class T>
