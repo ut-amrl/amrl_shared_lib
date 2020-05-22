@@ -30,8 +30,6 @@
 
 namespace array_util {
 
-const bool kProduction = false;
-
 template <size_t N, class T>
 std::array<T, N> MakeArray(const T& v) {
   std::array<T, N> ret;
@@ -183,11 +181,6 @@ std::array<T, N> GetIndexedElements(const std::array<std::vector<T>, N>& a,
     if (needs_replans[i]) {
       const auto& v = a[i];
       const size_t& index = indices[i];
-      if (!kProduction) {
-        if (index >= v.size()) {
-          LOG(FATAL) << "Index " << index << " out of range " << v.size();
-        }
-      }
       ret[i] = v[index];
     }
   }
