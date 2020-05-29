@@ -25,31 +25,35 @@
 #ifndef SRC_MATH_MATH_UTIL_H_
 #define SRC_MATH_MATH_UTIL_H_
 
+#ifndef M_2PI
 #define M_2PI (2.0 * M_PI)
+#endif  // M_2PI
 
 namespace math_util {
 
-// Convert angle in radians to degrees.
+// Clamp value to min and max.
 template <typename T>
-T Clamp(const T value, const T min, const T max) {
-  return std::max(min, std::min(value, max));
+T Clamp(const T value, const T min_value, const T max_value) {
+  if (value < min_value) return min_value;
+  if (value > max_value) return max_value;
+  return value;
 }
 
 // Convert angle in radians to degrees.
 template <typename T>
 T RadToDeg(T angle) {
-  return (angle / M_PI * 180.0);
+  return (angle / T(M_PI) * 180.0);
 }
 
 // Convert angle in degrees to radians.
 template <typename T>
 constexpr T DegToRad(T angle) {
-  return (angle / 180.0 * M_PI);
+  return (angle / 180.0 * T(M_PI));
 }
 
 template <typename T>
 T AngleMod(T angle) {
-  angle -= M_2PI * rint(angle / M_2PI);
+  angle -= T(M_2PI) * rint(angle / T(M_2PI));
   return angle;
 }
 

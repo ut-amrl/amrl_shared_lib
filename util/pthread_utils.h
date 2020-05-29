@@ -87,14 +87,14 @@ class ThreadSafe {
   // Set the value of the underlying type in a thread-safe manner.
   template <typename T_Other>
   void Set(const T_Other& rvalue) {
-    ScopedLock lock(mutex_);
+    ScopedLock lock(&mutex_);
     value_ = rvalue;
   }
 
   // Get a copy of the value of the underlying type in a thread-safe manner.
   T Get() const {
     T value;
-    ScopedLock lock(mutex_);
+    ScopedLock lock(&mutex_);
     value = value_;
     return (value);
   }

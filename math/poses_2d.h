@@ -23,7 +23,6 @@
 #include "eigen3/Eigen/Dense"
 #include "eigen3/Eigen/Geometry"
 #include "math/math_util.h"
-#include "shared/common_includes.h"
 
 #ifndef SRC_MATH_POSES_2D_H_
 #define SRC_MATH_POSES_2D_H_
