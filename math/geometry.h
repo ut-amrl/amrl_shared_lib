@@ -313,6 +313,25 @@ void ProjectPointOntoLineSegment(const Eigen::Matrix<T, 2, 1>& point,
   *squared_distance = (point - (*projected_point)).squaredNorm();
 }
 
+// Closest distance of a point from a line segment.
+template <typename T>
+T DistanceFromLineSegment(
+    const Eigen::Matrix<T, 2, 1>& point,
+    const Eigen::Matrix<T, 2, 1>& vertex_a,
+    const Eigen::Matrix<T, 2, 1>& vertex_b) {
+  Eigen::Matrix<T, 2, 1> dir = (vertex_b - vertex_a);
+  const T l = dir.norm();
+  dir = dir / l;
+  const T c = dir.dot(point - vertex_a);
+  if (c < T(0)) {
+    return (point - vertex_a).norm();
+  } else if (c > l) {
+    return (point - vertex_b).norm();
+  }
+  const Eigen::Matrix<T, 2, 1> n = Perp(dir);
+  return fabs(n.dot(point - vertex_a));
+}
+
 // Project a given point onto a line segment.
 // The line segment is defined by its two vertices vertex_a and vertex_b
 // Returns the location of the projection.

@@ -190,5 +190,34 @@ TEST(LineLineIntersection, CollidesAndIntersection) {
   }
 }
 
+TEST(DistanceFromLineSegment, Mid) {
+  {
+    const Eigen::Vector2f p0(1, 2);
+    const Eigen::Vector2f p1(10, 2);
+    const Eigen::Vector2f v(4, 5);
+    EXPECT_FLOAT_EQ(geometry::DistanceFromLineSegment(v, p0, p1), 3);
+  }
+  {
+    const Eigen::Vector2f p0(1, 2);
+    const Eigen::Vector2f p1(6, 7);
+    const Eigen::Vector2f v(2, 2);
+    EXPECT_FLOAT_EQ(geometry::DistanceFromLineSegment(v, p0, p1), 1.0 / sqrt(2.0));
+  }
+}
 
-
+TEST(DistanceFromLineSegment, End) {
+  {
+    const Eigen::Vector2f p0(1, 2);
+    const Eigen::Vector2f p1(10, 2);
+    const Eigen::Vector2f v(13, 5);
+    EXPECT_FLOAT_EQ(geometry::DistanceFromLineSegment(v, p0, p1),
+                    3.0 * sqrt(2.0));
+  }
+  {
+    const Eigen::Vector2f p0(1, 2);
+    const Eigen::Vector2f p1(6, 7);
+    const Eigen::Vector2f v(0, 1);
+    EXPECT_FLOAT_EQ(geometry::DistanceFromLineSegment(v, p0, p1),
+                    sqrt(2.0));
+  }
+}
