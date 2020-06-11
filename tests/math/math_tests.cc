@@ -579,3 +579,44 @@ TEST(DistanceFromLineSegment, End) {
                     sqrt(2.0));
   }
 }
+
+TEST(CircleLineCollision, Collision) {
+  {
+    const Eigen::Vector2f c0(3, 3);
+    const float r = 10;
+    const Eigen::Vector2f p0(4, 4);
+    const Eigen::Vector2f p1(100, 400);
+    EXPECT_TRUE(geometry::CheckCircleLineCollision(c0, r, p0, p1));
+  }
+  {
+    const Eigen::Vector2f c0(3, 3);
+    const float r = 1;
+    const Eigen::Vector2f p0(-10, 3.5);
+    const Eigen::Vector2f p1(10, 3.5);
+    EXPECT_TRUE(geometry::CheckCircleLineCollision(c0, r, p0, p1));
+  }
+  {
+    const Eigen::Vector2f c0(4, 3);
+    const float r = 4;
+    const Eigen::Vector2f p0(-10, 3.5);
+    const Eigen::Vector2f p1(6, 4);
+    EXPECT_TRUE(geometry::CheckCircleLineCollision(c0, r, p0, p1));
+  }
+}
+
+TEST(CircleLineCollision, NoCollision) {
+  {
+    const Eigen::Vector2f c0(3, 3);
+    const float r = 1;
+    const Eigen::Vector2f p0(4, 4);
+    const Eigen::Vector2f p1(100, 400);
+    EXPECT_FALSE(geometry::CheckCircleLineCollision(c0, r, p0, p1));
+  }
+  {
+    const Eigen::Vector2f c0(3, 3);
+    const float r = 1;
+    const Eigen::Vector2f p0(-10, 4.5);
+    const Eigen::Vector2f p1(10, 4.5);
+    EXPECT_FALSE(geometry::CheckCircleLineCollision(c0, r, p0, p1));
+  }
+}
