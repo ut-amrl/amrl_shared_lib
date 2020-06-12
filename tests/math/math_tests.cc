@@ -604,6 +604,23 @@ TEST(CircleLineCollision, Collision) {
   }
 }
 
+TEST(CircleLineCollision, Touching) {
+  {
+    const Eigen::Vector2f c0(3, 3);
+    const float r = 1;
+    const Eigen::Vector2f p0(2, 4);
+    const Eigen::Vector2f p1(100, 4);
+    EXPECT_TRUE(geometry::CheckCircleLineCollision(c0, r, p0, p1));
+  }
+  {
+    const Eigen::Vector2f c0(3, 3);
+    const float r = 2;
+    const Eigen::Vector2f p0(5, 45);
+    const Eigen::Vector2f p1(5, -45);
+    EXPECT_TRUE(geometry::CheckCircleLineCollision(c0, r, p0, p1));
+  }
+}
+
 TEST(CircleLineCollision, NoCollision) {
   {
     const Eigen::Vector2f c0(3, 3);

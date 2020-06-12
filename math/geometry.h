@@ -494,16 +494,16 @@ T MinDistanceLineLine(const Eigen::Matrix<T, 2, 1>& a0,
   return std::sqrt(min_diff_sq);
 }
 
-// Check if the circle with center c0, and radius r collides with the line 
+// Check if the circle with center c0, and radius r collides with the line
 // segment p0 : p1, and return true if a collision is found.
 template <typename T>
 bool CheckCircleLineCollision(const Eigen::Matrix<T, 2, 1>& c0,
                               const T& r,
                               const Eigen::Matrix<T, 2, 1>& p0,
                               const Eigen::Matrix<T, 2, 1>& p1) {
-  if ((c0 - p0).squaredNorm() < math_util::Sq(r)) return true;
-  if ((c0 - p1).squaredNorm() < math_util::Sq(r)) return true;
-  if (DistanceFromLineSegment(c0, p0, p1) < r) return true;
+  if ((c0 - p0).squaredNorm() <= math_util::Sq(r)) return true;
+  if ((c0 - p1).squaredNorm() <= math_util::Sq(r)) return true;
+  if (DistanceFromLineSegment(c0, p0, p1) <= r) return true;
   return false;
 }
 
