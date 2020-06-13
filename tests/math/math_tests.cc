@@ -263,3 +263,182 @@ TEST(DistanceFromLineSegment, End) {
                     sqrt(2.0));
   }
 }
+
+TEST(AngleDiff, AngleNegPiAnglePi) {
+  const float angle0 = 0.0f;
+  EXPECT_NEAR(angle0,
+              math_util::AngleDiff<float>(-M_PI, M_PI),
+              0.0001f);
+}
+
+TEST(AngleDiff, Angle0Angle0) {
+  const float angle0 = 0.0f;
+  EXPECT_FLOAT_EQ(angle0,
+                  math_util::AngleDiff(angle0, angle0));
+}
+
+TEST(AngleDiff, Angle0Angle90) {
+  const float angle0 = 0.0f;
+  const float angle90 = 0.5f * M_PI;
+  EXPECT_FLOAT_EQ(-angle90,
+                  math_util::AngleDiff(angle0, angle90));
+}
+
+TEST(AngleDiff, Angle0Angle270) {
+  const float angle0 = 0.0f;
+  const float angle90 = math_util::DegToRad(90.0f);
+  const float angle270 = math_util::DegToRad(270.0f);
+  EXPECT_FLOAT_EQ(angle90,
+                  math_util::AngleDiff(angle0, angle270));
+}
+
+TEST(AngleDiff, Angle0Angle181) {
+  const float angle0 = 0.0f;
+  const float angle179 = math_util::DegToRad(179.0f);
+  const float angle181 = math_util::DegToRad(181.0f);
+  EXPECT_FLOAT_EQ(angle179,
+                  math_util::AngleDiff(angle0, angle181));
+}
+
+TEST(AngleDiff, Angle179Angle181) {
+  const float angle2 = math_util::DegToRad(2.0f);
+  const float angle179 = math_util::DegToRad(179.0f);
+  const float angle181 = math_util::DegToRad(181.0f);
+  EXPECT_TRUE(
+      std::abs(-angle2 - math_util::AngleDiff(angle179, angle181)) < 0.0001f);
+}
+
+TEST(AngleDiff, Angle181Angle179) {
+  const float angle2 = math_util::DegToRad(2.0f);
+  const float angle179 = math_util::DegToRad(179.0f);
+  const float angle181 = math_util::DegToRad(181.0f);
+  EXPECT_TRUE(
+      std::abs(angle2 - math_util::AngleDiff(angle181, angle179)) < 0.0001f);
+}
+
+TEST(AngleDiff, Angle179Angle541) {
+  const float angle2 = math_util::DegToRad(2.0f);
+  const float angle179 = math_util::DegToRad(179.0f);
+  const float angle541 = math_util::DegToRad(541.0f);
+  EXPECT_TRUE(
+      std::abs(-angle2 - math_util::AngleDiff(angle179, angle541)) < 0.0001f);
+}
+
+TEST(AngleDist, Angle0Angle0) {
+  const float angle0 = 0.0f;
+  EXPECT_FLOAT_EQ(angle0,
+                  math_util::AngleDist(angle0, angle0));
+}
+
+TEST(AngleDist, Angle0Angle90) {
+  const float angle0 = 0.0f;
+  const float angle90 = math_util::DegToRad(90.0f);
+  EXPECT_FLOAT_EQ(angle90,
+                  math_util::AngleDist(angle0, angle90));
+}
+
+TEST(AngleDist, Angle0Angle270) {
+  const float angle0 = 0.0f;
+  const float angle90 = math_util::DegToRad(90.0f);
+  const float angle270 = math_util::DegToRad(270.0f);
+  EXPECT_FLOAT_EQ(angle90,
+                  math_util::AngleDist(angle0, angle270));
+}
+
+TEST(AngleDist, Angle0Angle181) {
+  const float angle0 = 0.0f;
+  const float angle179 = math_util::DegToRad(179.0f);
+  const float angle181 = math_util::DegToRad(181.0f);
+  EXPECT_FLOAT_EQ(angle179,
+                  math_util::AngleDist(angle0, angle181));
+}
+
+TEST(AngleDist, Angle179Angle181) {
+  const float angle2 = math_util::DegToRad(2.0f);
+  const float angle179 = math_util::DegToRad(179.0f);
+  const float angle181 = math_util::DegToRad(181.0f);
+  EXPECT_TRUE(
+      std::abs(angle2 - math_util::AngleDist(angle179, angle181)) < 0.0001f);
+}
+
+TEST(AngleDist, Angle181Angle179) {
+  const float angle2 = math_util::DegToRad(2.0f);
+  const float angle179 = math_util::DegToRad(179.0f);
+  const float angle181 = math_util::DegToRad(181.0f);
+  EXPECT_TRUE(
+      std::abs(angle2 - math_util::AngleDist(angle181, angle179)) < 0.0001f);
+}
+
+TEST(AngleDist, Angle179Angle541) {
+  const float angle2 = math_util::DegToRad(2.0f);
+  const float angle179 = math_util::DegToRad(179.0f);
+  const float angle541 = math_util::DegToRad(541.0f);
+  EXPECT_TRUE(
+      std::abs(angle2 - math_util::AngleDist(angle179, angle541)) < 0.0001f);
+}
+
+TEST(CircleLineIntersection, NoSolutions) {
+  {
+    const Eigen::Vector2f c0(1, 1);
+    const float r = 2;
+    const Eigen::Vector2f p0(3.1, 1);
+    const Eigen::Vector2f p1(10, 10);
+    Eigen::Vector2f r0;
+    Eigen::Vector2f r1;
+    EXPECT_EQ(geometry::CircleLineIntersection(c0, r, p0, p1, &r0, &r1), 0);
+  }
+}
+
+TEST(CircleLineIntersection, OneSolution) {
+  {
+    const Eigen::Vector2f c0(1, 1);
+    const float r = 2;
+    const Eigen::Vector2f p0(2, 1);
+    const Eigen::Vector2f p1(10, 1);
+    Eigen::Vector2f r0;
+    Eigen::Vector2f r1;
+    EXPECT_EQ(geometry::CircleLineIntersection(c0, r, p0, p1, &r0, &r1), 1);
+    EXPECT_FLOAT_EQ(r0.x(), 3.0f);
+    EXPECT_FLOAT_EQ(r0.y(), 1.0f);
+  }
+  {
+    const Eigen::Vector2f c0(1, 1);
+    const float r = 3;
+    const Eigen::Vector2f p0(2, 2);
+    const Eigen::Vector2f p1(10, 10);
+    Eigen::Vector2f r0;
+    Eigen::Vector2f r1;
+    EXPECT_EQ(geometry::CircleLineIntersection(c0, r, p0, p1, &r0, &r1), 1);
+    EXPECT_FLOAT_EQ(r0.x(), 1.0f + std::cos(M_PI / 4.0f) * 3.0f);
+    EXPECT_FLOAT_EQ(r0.y(), 1.0f + std::cos(M_PI / 4.0f) * 3.0f);
+  }
+}
+
+TEST(CircleLineIntersection, TwoSolutions) {
+  {
+    const Eigen::Vector2f c0(1, 1);
+    const float r = 2;
+    const Eigen::Vector2f p0(-10, 1);
+    const Eigen::Vector2f p1(10, 1);
+    Eigen::Vector2f r0;
+    Eigen::Vector2f r1;
+    EXPECT_EQ(geometry::CircleLineIntersection(c0, r, p0, p1, &r0, &r1), 2);
+    EXPECT_FLOAT_EQ(r0.x(), -1.0f);
+    EXPECT_FLOAT_EQ(r0.y(), 1.0f);
+    EXPECT_FLOAT_EQ(r1.x(), 3.0f);
+    EXPECT_FLOAT_EQ(r1.y(), 1.0f);
+  }
+  {
+    const Eigen::Vector2f c0(1, 1);
+    const float r = 5;
+    const Eigen::Vector2f p0(4, -10);
+    const Eigen::Vector2f p1(4, 10);
+    Eigen::Vector2f r0;
+    Eigen::Vector2f r1;
+    EXPECT_EQ(geometry::CircleLineIntersection(c0, r, p0, p1, &r0, &r1), 2);
+    EXPECT_FLOAT_EQ(r0.x(), 4.0f);
+    EXPECT_FLOAT_EQ(r0.y(), -3.0f);
+    EXPECT_FLOAT_EQ(r1.x(), 4.0f);
+    EXPECT_FLOAT_EQ(r1.y(), 5.0f);
+  }
+}

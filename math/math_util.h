@@ -145,8 +145,6 @@ T Ramp(const T x, const T x_min, const T x_max, const T y_min, const T y_max) {
 // value is the number of unique real roots found.
 template <typename T>
 unsigned int SolveQuadratic(const T& a, const T& b, const T& c, T* r0, T* r1) {
-  DCHECK_NE(r0, static_cast<T*>(nullptr));
-  DCHECK_NE(r1, static_cast<T*>(nullptr));
   const T discriminant = Sq(b) - T(4.0) * a * c;
   if (discriminant < T(0)) {
     return 0;
