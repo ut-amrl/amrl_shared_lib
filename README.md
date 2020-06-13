@@ -18,6 +18,10 @@ Shared library for all AMRL C++ projects
    ```
    git submodule add git@github.com:umass-amrl/amrl_shared_lib.git src/shared
    ```
+   Alternatively, if using HTTPS:
+   ```
+   git submodule add https://github.com/ut-amrl/amrl_shared_lib.git src/shared
+   ```
 1. In the main `CMakeLists.txt` for your project, add the directory as a cmake subdir, and add the subdir as a location to search for includes (the order of these commands matters):
    ```
    INCLUDE_DIRECTORIES(src/shared)

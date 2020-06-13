@@ -58,14 +58,34 @@ T AngleMod(T angle) {
 }
 
 template <typename T>
-T AngleDiff(T a0, T a1) {
-  return AngleMod<T>(a0 - a1);
+T AngleDiff(const T& a0, const T& a1) {
+  const T s = std::sin(a0 - a1);
+  const T c = std::cos(a0 - a1);
+  return std::atan2(s, c);
 }
 
-template <typename T>
-T AngleDist(T a0, T a1) {
-  return std::fabs<T>(AngleMod<T>(a0 - a1));
+template <>
+inline float AngleDiff<float>(const float& a0, const float& a1) {
+  static constexpr float kPiF = static_cast<float>(M_2PI);
+  float angle = a0 - a1;
+  angle -= kPiF * rintf(angle / kPiF);
+  return angle;
 }
+
+template <>
+inline double AngleDiff<double>(const double& a0, const double& a1) {
+  static constexpr double kPiF = static_cast<double>(M_2PI);
+  double angle = a0 - a1;
+  angle -= kPiF * rint(angle / kPiF);
+  return angle;
+}
+
+
+template <typename T>
+T AngleDist(const T& a0, const T& a1) {
+  return std::abs<T>(AngleDiff(a0, a1));
+}
+
 
 // Check if angle is between min and max angle, moving in a counterclockwise
 // direction from min_angle to max_angle.
