@@ -529,10 +529,7 @@ int CircleLineIntersection(const Eigen::Matrix<T, 2, 1>& c0,
   if (s1_valid) {
     *r1 = p0 + gamma_1 * d;
   }
-  int num_intersections = 0;
-  if (s0_valid) ++num_intersections;
-  if (s1_valid) ++num_intersections;
-  return num_intersections;
+  return static_cast<int>(s0_valid) + static_cast<int>(s1_valid);
 }
 // Check if the circle with center c0, and radius r collides with the line
 // segment p0 : p1, and return true if a collision is found.

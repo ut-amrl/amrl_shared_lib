@@ -730,6 +730,31 @@ TEST(CircleLineIntersection, OneSolution) {
   }
 }
 
+TEST(CircleLineIntersection, TangentSolutions) {
+  {
+    const Eigen::Vector2f c0(1, 1);
+    const float r = 3;
+    const Eigen::Vector2f p0(1, 4);
+    const Eigen::Vector2f p1(10, 4);
+    Eigen::Vector2f r0;
+    Eigen::Vector2f r1;
+    EXPECT_EQ(geometry::CircleLineIntersection(c0, r, p0, p1, &r0, &r1), 1);
+    EXPECT_FLOAT_EQ(r0.x(), 1.0f);
+    EXPECT_FLOAT_EQ(r0.y(), 4.0f);
+  }
+  {
+    const Eigen::Vector2f c0(1, 1);
+    const float r = 3;
+    const Eigen::Vector2f p0(-10, 4);
+    const Eigen::Vector2f p1(10, 4);
+    Eigen::Vector2f r0;
+    Eigen::Vector2f r1;
+    EXPECT_EQ(geometry::CircleLineIntersection(c0, r, p0, p1, &r0, &r1), 1);
+    EXPECT_FLOAT_EQ(r0.x(), 1.0f);
+    EXPECT_FLOAT_EQ(r0.y(), 4.0f);
+  }
+}
+
 TEST(CircleLineIntersection, TwoSolutions) {
   {
     const Eigen::Vector2f c0(1, 1);
