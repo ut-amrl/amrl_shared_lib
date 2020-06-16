@@ -494,6 +494,43 @@ T MinDistanceLineLine(const Eigen::Matrix<T, 2, 1>& a0,
   return std::sqrt(min_diff_sq);
 }
 
+// Compute point(s) of intersection between the circle with center c0 and radius
+// r, and the line segment p0 : p1. The return value indicates the number of
+// valid points of intersection found: 0, 1, or 2. The points of intersection
+// are returned via r0 and r1.
+template <typename T>
+int CircleLineIntersection(const Eigen::Matrix<T, 2, 1>& c0,
+                           const T& r,
+                           const Eigen::Matrix<T, 2, 1>& p0,
+                           const Eigen::Matrix<T, 2, 1>& p1,
+                           Eigen::Matrix<T, 2, 1>* r0,
+                           Eigen::Matrix<T, 2, 1>* r1) {
+  Eigen::Matrix<T, 2, 1> d = p1 - p0;
+  const T l = d.norm();
+  d = d / l;
+  const Eigen::Matrix<T, 2, 1> delta = p0 - c0;  
+  const T b = T(2) * delta.dot(d);
+  const T c = delta.squaredNorm() - math_util::Sq(r);
+  T gamma_0;
+  T gamma_1;
+  const int num_solutions = 
+      math_util::SolveQuadratic(T(1), b, c, &gamma_0, &gamma_1);
+  if (num_solutions == 0) return 0;
+  bool s0_valid =  (gamma_0 >= T(0) && gamma_0 <= l);
+  bool s1_valid = (num_solutions > 1 && gamma_1 >= T(0) && gamma_1 <= l);
+  if (!s0_valid && s1_valid) {
+    s0_valid = true;
+    gamma_0 = gamma_1;
+    s1_valid = false;
+  }
+  if (s0_valid) {
+    *r0 = p0 + gamma_0 * d;
+  }
+  if (s1_valid) {
+    *r1 = p0 + gamma_1 * d;
+  }
+  return static_cast<int>(s0_valid) + static_cast<int>(s1_valid);
+}
 // Check if the circle with center c0, and radius r collides with the line
 // segment p0 : p1, and return true if a collision is found.
 template <typename T>
