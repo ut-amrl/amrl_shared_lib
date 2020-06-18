@@ -29,5 +29,5 @@ Shared library for all AMRL C++ projects
    ```
 1. Add `amrl-shared-lib` to the linker step for any executables (`my-program` in this example) that use the shared library:
    ```
-   TARGET_LINK_LIBRARIES(my-program amrl-shared-lib)
+   TARGET_LINK_LIBRARIES(my-program amrl_shared_lib)
    ```
