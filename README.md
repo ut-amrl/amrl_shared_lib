@@ -27,7 +27,20 @@ Shared library for all AMRL C++ projects
    INCLUDE_DIRECTORIES(src/shared)
    ADD_SUBDIRECTORY(src/shared)
    ```
-1. Add `amrl-shared-lib` to the linker step for any executables (`my-program` in this example) that use the shared library:
+1. Add `amrl_shared_lib` to the linker step for any executables (`my-program` in this example) that use the shared library:
    ```
-   TARGET_LINK_LIBRARIES(my-program amrl-shared-lib)
+   TARGET_LINK_LIBRARIES(my-program amrl_shared_lib)
    ```
+
+To change the name of the shared library, set `AMRL_LIBRARY_NAME` prior to the  `INCLUDE_DIRECTORIES` call in Step 2, e.g.:
+
+```
+SET(AMRL_LIBRARY_NAME "alternate_link_name"
+    CACHE STRING "Name of compiled library")
+```
+
+To generate the unit tests for the shared library, set `GENERATE_SHARED_LIB_UNITTESTS` to `ON` prior to the  `INCLUDE_DIRECTORIES` call in Step 2, e.g.:
+
+```
+SET(GENERATE_SHARED_LIB_UNITTESTS ON)
+```
