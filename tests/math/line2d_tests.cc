@@ -37,7 +37,7 @@ TEST(Line2D, Touching) {
   }
 }
 
-TEST(Line2D, CollinearNoIntersection) {
+TEST(Line2D, IntersectCollinearNoIntersection) {
   {
     const Line2f l1(Vector2f(1, 1), Vector2f(2, 2));
     const Line2f l2(Vector2f(3, 3), Vector2f(4, 4));
@@ -45,7 +45,7 @@ TEST(Line2D, CollinearNoIntersection) {
   }
 }
 
-TEST(Line2D, CollinearOverlap) {
+TEST(Line2D, IntersectCollinearOverlap) {
   {
     const Line2f l1(Vector2f(1, 1), Vector2f(3, 3));
     const Line2f l2(Vector2f(2, 2), Vector2f(4, 4));
@@ -53,7 +53,7 @@ TEST(Line2D, CollinearOverlap) {
   }
 }
 
-TEST(Line2D, CollinearTouching) {
+TEST(Line2D, IntersectCollinearTouching) {
   {
     const Line2f l1(Vector2f(1, 1), Vector2f(3, 3));
     const Line2f l2(Vector2f(3, 3), Vector2f(4, 4));
@@ -106,4 +106,46 @@ TEST(Line2D, Distance) {
 
   EXPECT_FLOAT_EQ(Line2f(1, 1, 10, 1).Distance(
       Vector2f(6, 2)), 1.0);
+}
+
+TEST(Line2D, OverlapCollinearNoIntersection) {
+  {
+    const Line2f l1(Vector2f(1, 1), Vector2f(2, 2));
+    const Line2f l2(Vector2f(3, 3), Vector2f(4, 4));
+    EXPECT_FALSE(l1.Overlaps(l2));
+  }
+}
+
+TEST(Line2D, OverlapCollinearOverlap) {
+  {
+    const Line2f l1(Vector2f(1, 1), Vector2f(3, 3));
+    const Line2f l2(Vector2f(2, 2), Vector2f(4, 4));
+    EXPECT_TRUE(l1.Overlaps(l2));
+  }
+}
+
+TEST(Line2D, OverlapCollinearTouching) {
+  {
+    const Line2f l1(Vector2f(1, 1), Vector2f(3, 3));
+    const Line2f l2(Vector2f(3, 3), Vector2f(4, 4));
+    EXPECT_TRUE(l1.Overlaps(l2));
+  }
+}
+
+TEST(Line2D, OverlapCollinearContains) {
+  {
+    const Line2f l1(Vector2f(1, 1), Vector2f(3, 3));
+    const Line2f l2(Vector2f(0, 0), Vector2f(4, 4));
+    EXPECT_TRUE(l1.Overlaps(l2));
+    EXPECT_TRUE(l2.Overlaps(l1));
+  }
+}
+
+TEST(Line2D, OverlapCollinearNearlyContains) {
+  {
+    const Line2f l1(Vector2f(1, 1), Vector2f(3, 3));
+    const Line2f l2(Vector2f(0, 0), Vector2f(4, 4.0000001));
+    EXPECT_TRUE(l1.Overlaps(l2));
+    EXPECT_TRUE(l2.Overlaps(l1));
+  }
 }

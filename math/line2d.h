@@ -227,7 +227,7 @@ struct Line {
     Vector2T v1 = p1 - p3;
     Vector2T v2 = p0 - p2;
     Vector2T v3 = p1 - p2;
-    if( (Cross(v0, v1) == 0.0 && v0.dot(v1) < 0.0) || (Cross(v2, v3) == 0.0 && v2.dot(v3) < 0.0) ){
+    if( (Cross(v0, v1) == 0.0 && v0.dot(v1) <= 0.0) || (Cross(v2, v3) == 0.0 && v2.dot(v3) <= 0.0) ){
       return true;
     }
 
@@ -237,7 +237,7 @@ struct Line {
     v1 = p3 - p1;
     v2 = p2 - p0;
     v3 = p3 - p0;
-    if( (Cross(v0, v1) == 0.0 && v0.dot(v1) < 0.0) || (Cross(v2, v3) == 0.0 && v2.dot(v3) < 0.0) ){
+    if( (Cross(v0, v1) == 0.0 && v0.dot(v1) <= 0.0) || (Cross(v2, v3) == 0.0 && v2.dot(v3) <= 0.0) ){
       return true;
     }
 
