@@ -211,6 +211,44 @@ struct Line {
     return (p + alpha * dir);
   }
 
+  // Check if these lines overlap
+  bool Overlaps(const Vector2T& p2,
+                  const Vector2T& p3) const {
+                    
+    Line l(p2, p3);
+
+    // First check if they are parallel
+    if(!IsParallel(Dir(), l.Dir())) {
+      return false;
+    } 
+
+    // Now check if either endpoint (p2, p3) is on this line (p0, p1)
+    Vector2T v0 = p0 - p3;
+    Vector2T v1 = p1 - p3;
+    Vector2T v2 = p0 - p2;
+    Vector2T v3 = p1 - p2;
+    if( (Cross(v0, v1) == 0.0 && v0.dot(v1) < 0.0) || (Cross(v2, v3) == 0.0 && v2.dot(v3) < 0.0) ){
+      return true;
+    }
+
+    // Either these lines don't overlap, or (p2,p3) is longer than this line on both sides
+    // Now check if either of this line's endpoint (p0, p1) is on the target line (p2, p3)
+    v0 = p2 - p1;
+    v1 = p3 - p1;
+    v2 = p2 - p0;
+    v3 = p3 - p0;
+    if( (Cross(v0, v1) == 0.0 && v0.dot(v1) < 0.0) || (Cross(v2, v3) == 0.0 && v2.dot(v3) < 0.0) ){
+      return true;
+    }
+
+    return false;
+    
+  }
+
+  bool Overlaps(const Line<T>& l2) const {
+    return Overlaps(l2.p0, l2.p1);
+  }
+
   EIGEN_MAKE_ALIGNED_OPERATOR_NEW
 };
 
