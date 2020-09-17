@@ -141,11 +141,20 @@ TEST(Line2D, OverlapCollinearContains) {
   }
 }
 
-TEST(Line2D, OverlapCollinearNearlyContains) {
+TEST(Line2D, OverlapCollinearInsideEpsilon) {
   {
-    const Line2f l1(Vector2f(1, 1), Vector2f(3, 3));
-    const Line2f l2(Vector2f(0, 0), Vector2f(4, 4.0000001));
+    const Line2f l1(Vector2f(1, 1.001), Vector2f(3, 3.001));
+    const Line2f l2(Vector2f(0, 0), Vector2f(4, 4));
     EXPECT_TRUE(l1.Overlaps(l2));
     EXPECT_TRUE(l2.Overlaps(l1));
+  }
+}
+
+TEST(Line2D, OverlapCollinearOutsideEpsilon) {
+  {
+    const Line2f l1(Vector2f(1, 1.1), Vector2f(3, 3.1));
+    const Line2f l2(Vector2f(0, 0), Vector2f(4, 4));
+    EXPECT_FALSE(l1.Overlaps(l2));
+    EXPECT_FALSE(l2.Overlaps(l1));
   }
 }

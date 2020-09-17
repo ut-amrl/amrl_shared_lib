@@ -214,34 +214,40 @@ struct Line {
   // Check if these lines overlap
   bool Overlaps(const Vector2T& p2,
                   const Vector2T& p3) const {
-                    
-    Line l(p2, p3);
+                  
+    // Tolerance of 1 centimeter
+    float touch_epsilon = 0.01;
 
-    // First check if they are parallel
-    if(!IsParallel(Dir(), l.Dir())) {
+    float parallel_epsilon = 1e-6;
+                    
+    const Line &l1 = (*this);
+    const Line l2(p2, p3);
+
+    // First check if they are parallel within epsilon
+    const Vector2T v8  = p1 - p0;
+    const Vector2T v9 = p3 - p2;
+    const T m1 = v8.norm();
+    const T m2 = v9.norm();
+    
+    if(!(fabs(fabs(v8.dot(v9)) - m1 * m2) < parallel_epsilon)) {
       return false;
     } 
 
-    // Now check if either endpoint (p2, p3) is on this line (p0, p1)
-    Vector2T v0 = p0 - p3;
-    Vector2T v1 = p1 - p3;
-    Vector2T v2 = p0 - p2;
-    Vector2T v3 = p1 - p2;
-    if( (Cross(v0, v1) == 0.0 && v0.dot(v1) <= 0.0) || (Cross(v2, v3) == 0.0 && v2.dot(v3) <= 0.0) ){
-      return true;
-    }
+    // Now check if either endpoint (p2, p3) is on this line (p0, p1) or vice versa
+    const Vector2T v0 = p0 - p2;
+    const Vector2T v1 = p1 - p2;
+    const Vector2T v2 = p0 - p3;
+    const Vector2T v3 = p1 - p3;
+    const Vector2T v4 = p2 - p0;
+    const Vector2T v5 = p3 - p0;
+    const Vector2T v6 = p2 - p1;
+    const Vector2T v7 = p3 - p1;
+    bool p2_touches_l1 = (Cross(v0, v1) / l1.Length()) <= touch_epsilon && v0.dot(v1) <= 0.0;
+    bool p3_touches_l1 = (Cross(v2, v3) / l1.Length()) <= touch_epsilon && v2.dot(v3) <= 0.0;
+    bool p0_touches_l2 = (Cross(v4, v5) / l2.Length()) <= touch_epsilon && v4.dot(v5) <= 0.0;
+    bool p1_touches_l2 = (Cross(v6, v7) / l2.Length()) <= touch_epsilon && v6.dot(v7) <= 0.0;
 
-    // Either these lines don't overlap, or (p2,p3) is longer than this line on both sides
-    // Now check if either of this line's endpoint (p0, p1) is on the target line (p2, p3)
-    v0 = p2 - p1;
-    v1 = p3 - p1;
-    v2 = p2 - p0;
-    v3 = p3 - p0;
-    if( (Cross(v0, v1) == 0.0 && v0.dot(v1) <= 0.0) || (Cross(v2, v3) == 0.0 && v2.dot(v3) <= 0.0) ){
-      return true;
-    }
-
-    return false;
+    return (p2_touches_l1 || p3_touches_l1 || p0_touches_l2 || p1_touches_l2);
     
   }
 
