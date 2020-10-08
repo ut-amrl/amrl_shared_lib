@@ -28,6 +28,7 @@
 
 #include "eigen3/Eigen/Dense"
 #include "eigen3/Eigen/Geometry"
+#include "glog/logging.h"
 #include "math/math_util.h"
 
 using std::sqrt;
