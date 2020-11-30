@@ -84,7 +84,7 @@ inline double AngleDiff<double>(const double& a0, const double& a1) {
 
 template <typename T>
 T AngleDist(const T& a0, const T& a1) {
-  return std::abs<T>(AngleDiff(a0, a1));
+  return std::abs(AngleDiff(a0, a1));
 }
 
 
