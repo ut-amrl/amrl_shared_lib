@@ -19,6 +19,7 @@
 // If not, see <http://www.gnu.org/licenses/>.
 //========================================================================
 
+#include <stdint.h>
 #include <random>
 
 #ifndef SRC_UTIL_RANDOM_H_
@@ -30,9 +31,10 @@ class Random {
  public:
   Random() : randn_(0, 1.0), randf_(0.0, 1.0) {}
 
-  Random(unsigned long seed): generator_(seed),
-                              randn_(0, 1.0),
-                              randf_(0.0, 1.0) {}
+  explicit Random(uint64_t seed): 
+      generator_(seed),
+      randn_(0, 1.0),
+      randf_(0.0, 1.0) {}
 
   // Generate random numbers between 0 and 1, inclusive.
   double UniformRandom();
