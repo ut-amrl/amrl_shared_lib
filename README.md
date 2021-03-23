@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/ut-amrl/amrl_shared_lib.svg?branch=master)](https://travis-ci.com/ut-amrl/amrl_shared_lib)
+![Test Status](https://github.com/ut-amrl/amrl_shared_lib/actions/workflows/buildTest.yml/badge.svg)
 
 # amrl_shared_lib
 Shared library for all AMRL C++ projects
