@@ -16,7 +16,6 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get install -y libgtest-dev libeigen3-dev  libgoogle-glog-dev cmake build-essential
-          pushd /usr/src/gtest && CC=$(which $CC) && CXX=$(which $CXX) && sudo cmake CMakeLists.txt && sudo make && sudo cp *.a /usr/lib && popd
 
       # Checks out a copy of your repository
       - name: Checkout code
