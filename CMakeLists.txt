@@ -22,8 +22,7 @@ ADD_LIBRARY(${AMRL_LIBRARY_NAME}
             util/timer.cc
             util/random.cc
             util/serialization.cc
-            util/terminal_colors.cc
-            util/kdtree.cc)
+            util/terminal_colors.cc)
 TARGET_LINK_LIBRARIES(${AMRL_LIBRARY_NAME} ${LIBS})
 
 IF(GENERATE_SHARED_LIB_UNITTESTS)
