@@ -28,7 +28,8 @@ TARGET_LINK_LIBRARIES(${AMRL_LIBRARY_NAME} ${LIBS})
 IF(GENERATE_SHARED_LIB_UNITTESTS)
   ADD_EXECUTABLE(${AMRL_LIB_UNITTEST_NAME}
                 tests/math/line2d_tests.cc
-                tests/math/math_tests.cc)
+                tests/math/math_tests.cc
+                tests/util/kdtree_tests.cc)
   TARGET_LINK_LIBRARIES(${AMRL_LIB_UNITTEST_NAME}
                         ${AMRL_LIBRARY_NAME}
                         gtest
