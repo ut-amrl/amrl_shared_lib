@@ -1,4 +1,4 @@
-![Test Status](https://github.com/ut-amrl/amrl_shared_lib/actions/workflows/buildTest.yml/badge.svg)
+[![Test Status](https://github.com/ut-amrl/amrl_shared_lib/actions/workflows/buildTest.yml/badge.svg)](https://github.com/ut-amrl/amrl_shared_lib/actions)
 
 # amrl_shared_lib
 Shared library for all AMRL C++ projects
