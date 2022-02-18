@@ -42,7 +42,7 @@ class Random {
   // Generate random numbers between a and b, inclusive.
   double UniformRandom(double a, double b);
 
-  // Generate random numbers between min, inclusive, and max, exclusive.
+  // Generate random numbers between min and max, inclusive.
   template <typename T>
   T RandomInt(const T min, const T max) {
     std::uniform_int_distribution<T> dist(min, max);
