@@ -118,4 +118,37 @@ CumulativeFunctionTimer::~CumulativeFunctionTimer() {
 }
 
 
+RateChecker::Invocation::Invocation(
+    RateChecker* rate_checker) :
+    t_start_(GetMonotonicTime()), rate_checker_(rate_checker) {
+  rate_checker_->total_invocations_++;
+  if (rate_checker_-> t_last_run_ > 0.0) {
+    rate_checker_->total_intervals_ += (t_start_ - rate_checker_->t_last_run_);
+  }
+  rate_checker_->t_last_run_ = t_start_;
+}
 
+RateChecker::Invocation::~Invocation() {
+  const double t_duration = GetMonotonicTime() - t_start_;
+  rate_checker_->total_run_time_ += t_duration;
+}
+
+RateChecker::RateChecker(const char* name) :
+    name_(name),
+    t_last_run_(0.0),
+    total_intervals_(0),
+    total_run_time_(0.0),
+    total_invocations_(0) {}
+
+RateChecker::~RateChecker() {
+  const double mean_run_time =
+      total_run_time_ / static_cast<double>(total_invocations_);
+  const double mean_interval =
+      total_intervals_ / static_cast<double>(total_invocations_);
+  printf("Run-time stats for %s : mean run time = %f ms, "
+         "invocations = %" PRIu64 ", mean interval = %f ms\n",
+         name_.c_str(),
+         1.0E3 * mean_run_time,
+         total_invocations_,
+         1.0E3 * mean_interval);
+}

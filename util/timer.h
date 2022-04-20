@@ -145,4 +145,64 @@ class CumulativeFunctionTimer {
   uint64_t total_invocations_;
 };
 
+// Timer to check if a function is executed at the specified rate. To use this
+// timer, declare an instance of RateChecker at a higher scope than the
+// function, and instantiate an Invocation for each function.
+// Example:
+// ==============================
+// // Foo should execute at 10 Hz.
+// RateChecker foo_rate_checker_("Foo", 10);
+// void Foo() {
+//   RateChecker::Invocation invoke(&foo_rate_checker_);
+//   // ... Do some stuff ...
+// }
+// ==============================
+class RateChecker {
+ public:
+  class Invocation {
+   public:
+    // Primary constructor, starts the timer.
+    explicit Invocation(RateChecker* rate_checker);
+
+    // Default destructor, Stops the timer.
+    ~Invocation();
+   private:
+    // Disable copy constructor.
+    Invocation(const Invocation&);
+    // Disable default constructor.
+    Invocation();
+
+   private:
+    // Start time.
+    const double t_start_;
+    // Pointer to rate checker.
+    RateChecker* const rate_checker_;
+  };
+
+ public:
+  // Primary constructor, pass in the function name, or whatever label you wish
+  // to identify the timer by.
+  explicit RateChecker(const char* name);
+
+  // Default destructor. Print statistics of all invocations.
+  ~RateChecker();
+
+ private:
+  // Disable copy constructor.
+  RateChecker(const RateChecker&);
+  // Disable default constructor.
+  RateChecker();
+
+ private:
+  // Name of the timer.
+  const std::string name_;
+  // Start time of last iteration.
+  double t_last_run_;
+  // Total intervals between invocations.
+  double total_intervals_;
+  // Total execution time.
+  double total_run_time_;
+  // Number of times the function was invoked.
+  uint64_t total_invocations_;
+};
 #endif  // SRC_UTIL_TIMER_H_
