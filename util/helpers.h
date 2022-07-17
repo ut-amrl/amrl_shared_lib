@@ -43,7 +43,7 @@ std::string ExecuteCommand(const char* cmd);
 // Print the execution backtrace of the program to the specified @file, which is
 // stdout by default. For enhanced readability, the compiler should be invoked
 // with the "-g -rdynamic" flags.
-void PrintStackTrace(FILE* file = stdout);
+void PrintStackTrace();
 
 // Returns truee iff the file specified exists in the file system.
 bool FileExists(const std::string& file_name);
