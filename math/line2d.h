@@ -84,7 +84,7 @@ struct Line {
     } else if (math_util::Sq(x) > (p1 - p0).squaredNorm()) {
       return (p - p1).norm();
     }
-    return std::abs<T>(geometry::Perp(dir).dot(p - p0));
+    return std::abs(geometry::Perp(dir).dot(p - p0));
   }
 
   bool CloserThan(const Vector2T& p2,
