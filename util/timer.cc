@@ -23,6 +23,7 @@
 #include <time.h>
 #include <stdio.h>
 #include <unistd.h>
+#include <glog/logging.h>
 
 #include <algorithm>
 #include <string>
@@ -82,15 +83,12 @@ FunctionTimer::FunctionTimer(const char* name) :
 
 FunctionTimer::~FunctionTimer() {
   const double t_stop = GetMonotonicTime();
-  printf("%s: %f ms\n", name_.c_str(), 1.0E3 * (t_stop - t_start_));
+  LOG(INFO) << name_ << ": " << (1.0E3 * (t_stop - t_start_)) << " ms";
 }
 
 void FunctionTimer::Lap(int id) {
   const double t_now = GetMonotonicTime();
-  printf("%s(%d): %f ms\n",
-         name_.c_str(),
-         id,
-         1.0E3 * (t_now - t_lap_start_));
+  LOG(INFO) << name_ << "(" << id << "): " << (1.0E3 * (t_now - t_lap_start_)) << " ms";
   t_lap_start_ = t_now;
 }
 
@@ -110,11 +108,8 @@ CumulativeFunctionTimer::CumulativeFunctionTimer(const char* name) :
 CumulativeFunctionTimer::~CumulativeFunctionTimer() {
   const double mean_run_time =
       total_run_time_ / static_cast<double>(total_invocations_);
-  printf("Run-time stats for %s : mean run time = %f ms, "
-         "invocations = %" PRIu64 "\n",
-         name_.c_str(),
-         1.0E3 * mean_run_time,
-         total_invocations_);
+  LOG(INFO) << "Run-time stats for " << name_ << " : mean run time = " << (1.0E3 * mean_run_time)
+  << " ms, invocations = " << total_invocations_;
 }
 
 
@@ -145,10 +140,6 @@ RateChecker::~RateChecker() {
       total_run_time_ / static_cast<double>(total_invocations_);
   const double mean_interval =
       total_intervals_ / static_cast<double>(total_invocations_);
-  printf("Run-time stats for %s : mean run time = %f ms, "
-         "invocations = %" PRIu64 ", mean interval = %f ms\n",
-         name_.c_str(),
-         1.0E3 * mean_run_time,
-         total_invocations_,
-         1.0E3 * mean_interval);
+  LOG(INFO)  << "Run-time stats for " << name_ << " : mean run time = " << (1.0E3 * mean_run_time)
+  << " ms, invocations = " << total_invocations_ << ", mean interval = " << (1.0E3 * mean_interval) << " ms";
 }
