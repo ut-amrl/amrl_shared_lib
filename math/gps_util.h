@@ -57,6 +57,12 @@ struct GPSTranslator {
     return true;
   }
 
+  void SetOrigin(double latitude, double longitude, double orientation) {
+    gps_origin_latitude = latitude;
+    gps_origin_longitude = longitude;
+    map_orientation = orientation;
+  }
+
   Vector2d GPSToMetric(const double latitude, const double longitude) {
     const double theta = DegToRad(latitude);
     const double c = std::cos(theta);
