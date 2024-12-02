@@ -36,10 +36,12 @@ struct GPSPoint {
   double time;
   double lat;
   double lon;
-  double heading;  // True North
+  double heading;  // True North (degrees)
 };
 
 struct GPSTranslator {
+  GPSTranslator() : is_origin_set(false) {}
+
   string GetMapFileFromName(const string& maps_dir, const string& map) {
     return maps_dir + "/" + map + "/" + map + ".gpsmap.txt";
   }
@@ -54,6 +56,7 @@ struct GPSTranslator {
     }
     printf("Map origin: %12.8lf, %12.8lf\n", gps_origin_latitude,
            gps_origin_longitude);
+    is_origin_set = true;
     return true;
   }
 
@@ -61,9 +64,11 @@ struct GPSTranslator {
     gps_origin_latitude = latitude;
     gps_origin_longitude = longitude;
     map_orientation = orientation;
+    is_origin_set = true;
   }
 
   Vector2d GPSToMetric(const double latitude, const double longitude) {
+    CHECK(is_origin_set);
     const double theta = DegToRad(latitude);
     const double c = std::cos(theta);
     const double s = std::sin(theta);
@@ -78,6 +83,7 @@ struct GPSTranslator {
   }
 
   void MetricToGPS(const Vector2d& loc, double* longitude, double* latitude) {
+    CHECK(is_origin_set);
     const double theta = DegToRad(gps_origin_latitude);
     const double c = std::cos(theta);
     const double s = std::sin(theta);
@@ -93,6 +99,7 @@ struct GPSTranslator {
   double gps_origin_longitude;
   double gps_origin_latitude;
   double map_orientation;
+  bool is_origin_set;
 
   // Earth geoid parameters from WGS 84 system
   // https://en.wikipedia.org/wiki/World_Geodetic_System#A_new_World_Geodetic_System:_WGS_84
@@ -156,6 +163,8 @@ inline std::tuple<double, double, int> gpsToUTM(double lat, double lon) {
 }
 
 inline double gpsDistance(const GPSPoint& p0, const GPSPoint& p1) {
+  const auto& [lat0, lon0] = std::make_tuple(p0.lat, p0.lon);
+  const auto& [lat1, lon1] = std::make_tuple(p1.lat, p1.lon);
   // Convert latitude and longitude to radians
   double lat0_rad = p0.lat * M_PI / 180.0;
   double lon0_rad = p0.lon * M_PI / 180.0;
@@ -171,50 +180,48 @@ inline double gpsDistance(const GPSPoint& p0, const GPSPoint& p1) {
   return 6371000 * c;  // Radius of Earth in meters
 }
 
-inline Vector2d gpsToGlobalCoord(const GPSPoint& p0, const GPSPoint& p1) {
-  // Convert latitude and longitude to utm coordinates
-  const auto& [e0, n0, zone0] = gpsToUTM(p0.lat, p0.lon);
-  const auto& [e1, n1, zone1] = gpsToUTM(p1.lat, p1.lon);
-  return {e1 - e0, n1 - n0};
-}
+inline Eigen::Vector2d gpsToGlobalCoord(const GPSPoint& p0,
+                                        const GPSPoint& p1) {
+  const auto& [lat0, lon0] = std::make_tuple(p0.lat, p0.lon);
+  const auto& [lat1, lon1] = std::make_tuple(p1.lat, p1.lon);
 
-inline Eigen::Affine2f gpsToLocal(const GPSPoint& p0, const GPSPoint& p1) {
-  // Step 1: Convert current and goal GPS coordinates to UTM
-  const auto& [curr_easting, curr_northing, curr_zone] =
-      gpsToUTM(p0.lat, p0.lon);
-  const auto& [goal_easting, goal_northing, goal_zone] =
-      gpsToUTM(p1.lat, p1.lon);
-  // Ensure that both coordinates are in the same UTM zone
-  if (goal_zone != curr_zone) {
+  // Convert latitude and longitude to utm coordinates
+  const auto& [e0, n0, zone0] = gpsToUTM(lat0, lon0);
+  const auto& [e1, n1, zone1] = gpsToUTM(lat1, lon1);
+
+  if (zone0 != zone1) {
     throw std::runtime_error("GPS points are in different UTM zones.");
   }
 
-  // Step 2: Calculate the translation vector from the current position to the
-  // goal in UTM
-  double dx = goal_easting - curr_easting;
-  double dy = goal_northing - curr_northing;
+  return {e1 - e0, n1 - n0};  // x y
+}
 
-  // Step 3: Convert the current heading to radians and adjust for x-axis
+inline Eigen::Affine2f gpsToLocal(const GPSPoint& current,
+                                  const GPSPoint& goal) {
+  // Step 1: Convert the GPS coordinates to global coordinates
+  const auto& dvec = gpsToGlobalCoord(current, goal);
+
+  // Step 2: Convert the current heading to radians and adjust for x-axis
   // reference Since 0 degrees points along the y-axis and rotates
   // counter-clockwise, convert to radians with 0 degrees aligned along the
   // x-axis
-  double current_heading_rad = (90.0 - p0.heading) * M_PI / 180.0;
+  double current_heading_rad = (90.0 - current.heading) * M_PI / 180.0;
 
-  // Step 4: Rotate the translation vector to the robot's local frame
-  double local_x =
-      dx * cos(-current_heading_rad) - dy * sin(-current_heading_rad);
-  double local_y =
-      dx * sin(-current_heading_rad) + dy * cos(-current_heading_rad);
+  // Step 3: Rotate the translation vector to the robot's local frame
+  double local_x = dvec.x() * cos(-current_heading_rad) -
+                   dvec.y() * sin(-current_heading_rad);
+  double local_y = dvec.x() * sin(-current_heading_rad) +
+                   dvec.y() * cos(-current_heading_rad);
 
-  // Step 5: Convert the goal heading to the local frame
-  double goal_heading_rad = (90.0 - p1.heading) * M_PI / 180.0;
+  // Step 4: Convert the goal heading to the local frame
+  double goal_heading_rad = (90.0 - goal.heading) * M_PI / 180.0;
   double local_heading = goal_heading_rad - current_heading_rad;
 
   // Normalize local heading to the range [-pi, pi]
   while (local_heading > M_PI) local_heading -= 2 * M_PI;
   while (local_heading < -M_PI) local_heading += 2 * M_PI;
 
-  // Step 6: Create the affine transformation for the local pose of the goal
+  // Step 5: Create the affine transformation for the local pose of the goal
   Eigen::Affine2f transform = Eigen::Translation2f(local_x, local_y) *
                               Eigen::Rotation2Df(local_heading);
 
