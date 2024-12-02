@@ -155,12 +155,12 @@ inline std::tuple<double, double, int> gpsToUTM(double lat, double lon) {
   return std::make_tuple(easting, northing, zone);
 }
 
-inline double gpsDistance(double lat0, double lon0, double lat1, double lon1) {
+inline double gpsDistance(const GPSPoint& p0, const GPSPoint& p1) {
   // Convert latitude and longitude to radians
-  double lat0_rad = lat0 * M_PI / 180.0;
-  double lon0_rad = lon0 * M_PI / 180.0;
-  double lat1_rad = lat1 * M_PI / 180.0;
-  double lon1_rad = lon1 * M_PI / 180.0;
+  double lat0_rad = p0.lat * M_PI / 180.0;
+  double lon0_rad = p0.lon * M_PI / 180.0;
+  double lat1_rad = p1.lat * M_PI / 180.0;
+  double lon1_rad = p1.lon * M_PI / 180.0;
 
   // Haversine formula for distance between two GPS coordinates
   double dlat = lat1_rad - lat0_rad;
@@ -171,22 +171,19 @@ inline double gpsDistance(double lat0, double lon0, double lat1, double lon1) {
   return 6371000 * c;  // Radius of Earth in meters
 }
 
-inline std::tuple<double, double> gpsToGlobalCoord(double lat0, double lon0,
-                                                   double lat1, double lon1) {
+inline Vector2d gpsToGlobalCoord(const GPSPoint& p0, const GPSPoint& p1) {
   // Convert latitude and longitude to utm coordinates
-  const auto& [e0, n0, zone0] = gpsToUTM(lat0, lon0);
-  const auto& [e1, n1, zone1] = gpsToUTM(lat1, lon1);
+  const auto& [e0, n0, zone0] = gpsToUTM(p0.lat, p0.lon);
+  const auto& [e1, n1, zone1] = gpsToUTM(p1.lat, p1.lon);
   return {e1 - e0, n1 - n0};
 }
 
-inline Eigen::Affine2f gpsToLocal(double current_lat, double current_lon,
-                                  double current_heading, double goal_lat,
-                                  double goal_lon, double goal_heading) {
+inline Eigen::Affine2f gpsToLocal(const GPSPoint& p0, const GPSPoint& p1) {
   // Step 1: Convert current and goal GPS coordinates to UTM
   const auto& [curr_easting, curr_northing, curr_zone] =
-      gpsToUTM(current_lat, current_lon);
+      gpsToUTM(p0.lat, p0.lon);
   const auto& [goal_easting, goal_northing, goal_zone] =
-      gpsToUTM(goal_lat, goal_lon);
+      gpsToUTM(p1.lat, p1.lon);
   // Ensure that both coordinates are in the same UTM zone
   if (goal_zone != curr_zone) {
     throw std::runtime_error("GPS points are in different UTM zones.");
@@ -201,7 +198,7 @@ inline Eigen::Affine2f gpsToLocal(double current_lat, double current_lon,
   // reference Since 0 degrees points along the y-axis and rotates
   // counter-clockwise, convert to radians with 0 degrees aligned along the
   // x-axis
-  double current_heading_rad = (90.0 - current_heading) * M_PI / 180.0;
+  double current_heading_rad = (90.0 - p0.heading) * M_PI / 180.0;
 
   // Step 4: Rotate the translation vector to the robot's local frame
   double local_x =
@@ -210,7 +207,7 @@ inline Eigen::Affine2f gpsToLocal(double current_lat, double current_lon,
       dx * sin(-current_heading_rad) + dy * cos(-current_heading_rad);
 
   // Step 5: Convert the goal heading to the local frame
-  double goal_heading_rad = (90.0 - goal_heading) * M_PI / 180.0;
+  double goal_heading_rad = (90.0 - p1.heading) * M_PI / 180.0;
   double local_heading = goal_heading_rad - current_heading_rad;
 
   // Normalize local heading to the range [-pi, pi]
