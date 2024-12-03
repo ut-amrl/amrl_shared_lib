@@ -166,10 +166,10 @@ inline double gpsDistance(const GPSPoint& p0, const GPSPoint& p1) {
   const auto& [lat0, lon0] = std::make_tuple(p0.lat, p0.lon);
   const auto& [lat1, lon1] = std::make_tuple(p1.lat, p1.lon);
   // Convert latitude and longitude to radians
-  double lat0_rad = p0.lat * M_PI / 180.0;
-  double lon0_rad = p0.lon * M_PI / 180.0;
-  double lat1_rad = p1.lat * M_PI / 180.0;
-  double lon1_rad = p1.lon * M_PI / 180.0;
+  double lat0_rad = lat0 * M_PI / 180.0;
+  double lon0_rad = lon0 * M_PI / 180.0;
+  double lat1_rad = lat1 * M_PI / 180.0;
+  double lon1_rad = lon1 * M_PI / 180.0;
 
   // Haversine formula for distance between two GPS coordinates
   double dlat = lat1_rad - lat0_rad;
@@ -194,6 +194,10 @@ inline Eigen::Vector2d gpsToGlobalCoord(const GPSPoint& p0,
   }
 
   return {e1 - e0, n1 - n0};  // x y
+}
+
+inline double gpsToGlobalHeading(const GPSPoint& p0) {
+  return DegToRad(90.0 - p0.heading);
 }
 
 inline Eigen::Affine2f gpsToLocal(const GPSPoint& current,
