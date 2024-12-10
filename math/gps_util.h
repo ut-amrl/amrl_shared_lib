@@ -13,6 +13,7 @@
 
 using Eigen::Rotation2Dd;
 using Eigen::Vector2d;
+using math_util::AngleMod;
 using math_util::DegToRad;
 using std::string;
 
@@ -197,7 +198,9 @@ inline Eigen::Vector2d gpsToGlobalCoord(const GPSPoint& p0,
 }
 
 inline double gpsToGlobalHeading(const GPSPoint& p0) {
-  return DegToRad(90.0 - p0.heading);
+  double heading =
+      M_PI / 2.0 - DegToRad(p0.heading);  // convert to radians expected REP 105
+  return AngleMod(heading);
 }
 
 inline Eigen::Affine2f gpsToLocal(const GPSPoint& current,
@@ -206,9 +209,9 @@ inline Eigen::Affine2f gpsToLocal(const GPSPoint& current,
   const auto& dvec = gpsToGlobalCoord(current, goal);
 
   // Step 2: Convert the current heading to radians and adjust for x-axis
-  // reference Since 0 degrees points along the y-axis and rotates
-  // counter-clockwise, convert to radians with 0 degrees aligned along the
-  // x-axis
+  // reference Since 0 degrees pogpsToGlobalHeadingints along the y-axis and
+  // rotates counter-clockwise, convert to radians with 0 degrees aligned along
+  // the x-axis
   double current_heading_rad = (90.0 - current.heading) * M_PI / 180.0;
 
   // Step 3: Rotate the translation vector to the robot's local frame
