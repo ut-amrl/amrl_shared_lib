@@ -11,6 +11,7 @@
 #include "shared/math/math_util.h"
 #include "shared/util/helpers.h"
 
+using Eigen::Affine2d;
 using Eigen::Rotation2Dd;
 using Eigen::Vector2d;
 using math_util::AngleMod;
@@ -38,76 +39,6 @@ struct GPSPoint {
   double lat;
   double lon;
   double heading;  // True North (degrees)
-};
-
-struct GPSTranslator {
-  GPSTranslator() : is_origin_set(false) {}
-
-  string GetMapFileFromName(const string& maps_dir, const string& map) {
-    return maps_dir + "/" + map + "/" + map + ".gpsmap.txt";
-  }
-
-  bool Load(const string& maps_dir, const string& map) {
-    const string file = GetMapFileFromName(maps_dir, map);
-    ScopedFile fid(file, "r", true);
-    if (fid() == nullptr) return false;
-    if (fscanf(fid(), "%lf, %lf, %lf", &gps_origin_latitude,
-               &gps_origin_longitude, &map_orientation) != 3) {
-      return false;
-    }
-    printf("Map origin: %12.8lf, %12.8lf\n", gps_origin_latitude,
-           gps_origin_longitude);
-    is_origin_set = true;
-    return true;
-  }
-
-  void SetOrigin(double latitude, double longitude, double orientation) {
-    gps_origin_latitude = latitude;
-    gps_origin_longitude = longitude;
-    map_orientation = orientation;
-    is_origin_set = true;
-  }
-
-  Vector2d GPSToMetric(const double latitude, const double longitude) {
-    CHECK(is_origin_set);
-    const double theta = DegToRad(latitude);
-    const double c = std::cos(theta);
-    const double s = std::sin(theta);
-    const double r =
-        sqrt(Sq(wgs_84_a * wgs_84_b) / (Sq(c * wgs_84_b) + Sq(s * wgs_84_a)));
-    const double dlat = DegToRad(latitude - gps_origin_latitude);
-    const double dlong = DegToRad(longitude - gps_origin_longitude);
-    const double r1 = r * c;
-    const double x = r1 * dlong;
-    const double y = r * dlat;
-    return Rotation2Dd(map_orientation) * Vector2d(x, y);
-  }
-
-  void MetricToGPS(const Vector2d& loc, double* longitude, double* latitude) {
-    CHECK(is_origin_set);
-    const double theta = DegToRad(gps_origin_latitude);
-    const double c = std::cos(theta);
-    const double s = std::sin(theta);
-    const double r =
-        sqrt(Sq(wgs_84_a * wgs_84_b) / (Sq(c * wgs_84_b) + Sq(s * wgs_84_a)));
-    const double r1 = r * c;
-    const double dlat = loc.y() / r;
-    const double dlong = loc.x() / r1;
-    *longitude = gps_origin_longitude + dlong;
-    *latitude = gps_origin_latitude + dlat;
-  }
-
-  double gps_origin_longitude;
-  double gps_origin_latitude;
-  double map_orientation;
-  bool is_origin_set;
-
-  // Earth geoid parameters from WGS 84 system
-  // https://en.wikipedia.org/wiki/World_Geodetic_System#A_new_World_Geodetic_System:_WGS_84
-  // a = Semimajor (Equatorial) axis
-  static constexpr double wgs_84_a = 6378137.0;
-  // b = Semiminor (Polar) axis
-  static constexpr double wgs_84_b = 6356752.314245;
 };
 
 inline std::tuple<double, double, int> gpsToUTM(double lat, double lon) {
@@ -203,37 +134,73 @@ inline double gpsToGlobalHeading(const GPSPoint& p0) {
   return AngleMod(heading);
 }
 
-inline Eigen::Affine2f gpsToLocal(const GPSPoint& current,
-                                  const GPSPoint& goal) {
-  // Step 1: Convert the GPS coordinates to global coordinates
-  const auto& dvec = gpsToGlobalCoord(current, goal);
+struct GPSTranslator {
+  // Convenience wrapper for GPS to map coordinate transformations
+  GPSTranslator()
+      : is_gps_origin_set(false),
+        is_map_origin_set(false),
+        use_map_as_origin(false) {}
 
-  // Step 2: Convert the current heading to radians and adjust for x-axis
-  // reference Since 0 degrees pogpsToGlobalHeadingints along the y-axis and
-  // rotates counter-clockwise, convert to radians with 0 degrees aligned along
-  // the x-axis
-  double current_heading_rad = (90.0 - current.heading) * M_PI / 180.0;
+  bool Initialized() const { return is_gps_origin_set && is_map_origin_set; }
 
-  // Step 3: Rotate the translation vector to the robot's local frame
-  double local_x = dvec.x() * cos(-current_heading_rad) -
-                   dvec.y() * sin(-current_heading_rad);
-  double local_y = dvec.x() * sin(-current_heading_rad) +
-                   dvec.y() * cos(-current_heading_rad);
+  void SetReferenceFrame(const string& frame) {
+    if (frame == "map") {
+      use_map_as_origin = true;
+    } else if (frame == "utm") {
+      use_map_as_origin = false;
+    } else {
+      throw std::runtime_error("Invalid reference frame.");
+    }
+  }
 
-  // Step 4: Convert the goal heading to the local frame
-  double goal_heading_rad = (90.0 - goal.heading) * M_PI / 180.0;
-  double local_heading = goal_heading_rad - current_heading_rad;
+  void SetGPSOrigin(const GPSPoint& p) {
+    gps_origin = p;
+    is_gps_origin_set = true;
+    T_initial_gps = Eigen::Affine2d::Identity();
+  }
 
-  // Normalize local heading to the range [-pi, pi]
-  while (local_heading > M_PI) local_heading -= 2 * M_PI;
-  while (local_heading < -M_PI) local_heading += 2 * M_PI;
+  void SetMapOrigin(const Affine2d& p) {
+    T_initial_map = p;
+    is_map_origin_set = true;
+  }
 
-  // Step 5: Create the affine transformation for the local pose of the goal
-  Eigen::Affine2f transform = Eigen::Translation2f(local_x, local_y) *
-                              Eigen::Rotation2Df(local_heading);
+  Eigen::Vector2d GpsToGlobalCoord(const GPSPoint& p1) {
+    if (!is_gps_origin_set || !is_map_origin_set) {
+      throw std::runtime_error("GPS or map origin not set.");
+    }
 
-  return transform;
-}
+    Eigen::Vector2d gps_loc = gpsToGlobalCoord(gps_origin, p1);
+    Eigen::Affine2d T_base_gps = Eigen::Rotation2Dd(gpsToGlobalHeading(p1)) *
+                                 Eigen::Translation2d(gps_loc);
+    if (use_map_as_origin) {
+      Eigen::Affine2d T_gps_map = T_initial_gps * T_initial_map.inverse();
+      return (T_gps_map * T_base_gps).translation();
+    }
+
+    return gps_loc;
+  }
+
+  double GpsToGlobalHeading(const GPSPoint& p0) {
+    if (!is_gps_origin_set || !is_map_origin_set) {
+      throw std::runtime_error("GPS or map origin not set.");
+    }
+    double heading_global = gpsToGlobalHeading(p0);
+    if (use_map_as_origin) {
+      Eigen::Affine2d T_gps_map = T_initial_gps * T_initial_map.inverse();
+      Eigen::Rotation2Dd R_base_gps = Eigen::Rotation2Dd(heading_global);
+      Eigen::Rotation2Dd R_gps_map(T_gps_map.linear());
+      return (R_gps_map * R_base_gps).angle();
+    }
+    return heading_global;
+  }
+
+  bool is_gps_origin_set;
+  bool is_map_origin_set;
+  bool use_map_as_origin;
+  GPSPoint gps_origin;
+  Affine2d T_initial_gps;
+  Affine2d T_initial_map;
+};
 
 }  // namespace gps_util
 
