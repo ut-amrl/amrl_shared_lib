@@ -58,6 +58,15 @@ T Cross(const Eigen::Matrix<T, 2, 1>& v1, const Eigen::Matrix<T, 2, 1>& v2) {
   return (v1.x() * v2.y() - v2.x() * v1.y());
 }
 
+// Return the angle between two vectors in radians
+template <typename T>
+float VectorAngle(const Eigen::Matrix<T, 2, 1>& v1, const Eigen::Matrix<T, 2, 1>& v2) {
+  if (v1.norm() < kEpsilon || v2.norm() < kEpsilon) {
+    return 0; // Degenerate case
+  }
+  return acos(v1.dot(v2) / (v1.norm() * v2.norm()));
+}
+
 template <typename T, int N>
 Eigen::Matrix<T, N, 1> GetNormalizedOrZero(const Eigen::Matrix<T, N, 1>& vec) {
   const auto norm = vec.template lpNorm<1>();
