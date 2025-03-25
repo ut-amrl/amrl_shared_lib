@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.11)
+cmake_minimum_required(VERSION 3.16)
 
 PROJECT(amrl-shared-lib)
 
@@ -36,3 +36,9 @@ IF(GENERATE_SHARED_LIB_UNITTESTS)
                         gtest_main
                         ${LIBS})
 ENDIF()
+
+install(TARGETS ${AMRL_LIBRARY_NAME}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
