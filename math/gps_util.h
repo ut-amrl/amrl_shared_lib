@@ -8,8 +8,8 @@
 #include <tuple>
 
 #include "eigen3/Eigen/Dense"
-#include "shared/math/math_util.h"
-#include "shared/util/helpers.h"
+#include "math/math_util.h"
+#include "util/helpers.h"
 
 using Eigen::Affine2d;
 using Eigen::Rotation2Dd;
