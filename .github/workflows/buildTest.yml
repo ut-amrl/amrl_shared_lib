@@ -1,4 +1,4 @@
-name: Unit-Tests
+name: Build-Test
 # Run this workflow every time a new commit pushed to your repository
 on: push
 
@@ -7,21 +7,32 @@ jobs:
   # when a job name is not provided
   build-test:
     # Name the Job
-    name: Unit tests
+    name: Build and Unit Tests
     # Set the type of machine to run on
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
+
+    defaults:
+      run:
+        shell: bash -l {0}
 
     steps:
-      # Install dependencies
-      - name: Install dependencies
+      # Run package update
+      - name: Update package lists
         run: |
-          sudo apt-get install -y libgtest-dev libeigen3-dev  libgoogle-glog-dev cmake build-essential
+          sudo apt update
+          sudo apt dist-upgrade -y
 
       # Checks out a copy of your repository
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: 'recursive'
+
+      # Install dependencies
+      - name: Install dependencies
+        run: |
+          sudo apt-get install -y libgtest-dev libeigen3-dev cmake build-essential \
+            libgflags-dev libunwind-dev libgoogle-glog-dev
 
       # Compiles the code
       - name: Run build
@@ -30,3 +41,16 @@ jobs:
       # Run tests
       - name: Run unit tests
         run: make test
+
+      # Verify the library was built
+      - name: Verify build artifacts
+        run: |
+          if [ ! -f "./build/libamrl_shared_lib.a" ]; then
+            echo "Error: libamrl_shared_lib.a not found in build directory"
+            exit 1
+          fi
+          if [ ! -f "./build/amrl_shared_lib_tests" ]; then
+            echo "Error: amrl_shared_lib_tests not found in build directory"
+            exit 1
+          fi
+          echo "✓ Build artifacts verified successfully"
