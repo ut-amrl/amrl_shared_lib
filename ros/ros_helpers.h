@@ -22,12 +22,12 @@
 
 // C++ Library headers.
 #include "eigen3/Eigen/Core"
-#include "geometry_msgs/Point.h"
-#include "geometry_msgs/Vector3.h"
-#include "ros/ros.h"
-#include "std_msgs/ColorRGBA.h"
-#include "std_msgs/Header.h"
-#include "visualization_msgs/Marker.h"
+#include "geometry_msgs/msg/point.hpp"
+#include "geometry_msgs/msg/vector3.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/color_rgba.hpp"
+#include "std_msgs/msg/header.hpp"
+#include "visualization_msgs/msg/marker.hpp"
 
 // Custom headers.
 #include "math/math_util.h"
@@ -38,23 +38,22 @@
 namespace ros_helpers {
 
 inline void InitRosHeader(const std::string& frame_id,
-                          std_msgs::Header* h) {
-  h->seq = 0;
+                          std_msgs::msg::Header* h) {
   h->frame_id = frame_id;
-  h->stamp = ros::Time::now();
+  h->stamp = rclcpp::Clock().now();
 }
 
-inline void ClearMarker(visualization_msgs::Marker* m) {
+inline void ClearMarker(visualization_msgs::msg::Marker* m) {
   m->points.clear();
   m->colors.clear();
 }
 
 template<typename Tr, typename Tg, typename Tb, typename Ta>
-std_msgs::ColorRGBA RosColor(const Tr& r,
+std_msgs::msg::ColorRGBA RosColor(const Tr& r,
                              const Tg& g,
                              const Tb& b,
                              const Ta& a) {
-  std_msgs::ColorRGBA c;
+  std_msgs::msg::ColorRGBA c;
   c.r = r;
   c.g = g;
   c.b = b;
@@ -75,8 +74,8 @@ void SetRosColor(const Tr& r,
 }
 
 template<typename Tx, typename Ty, typename Tz>
-geometry_msgs::Point RosPoint(const Tx& x, const Ty& y, const Tz& z) {
-  geometry_msgs::Point p;
+geometry_msgs::msg::Point RosPoint(const Tx& x, const Ty& y, const Tz& z) {
+  geometry_msgs::msg::Point p;
   p.x = x;
   p.y = y;
   p.z = z;
@@ -84,8 +83,8 @@ geometry_msgs::Point RosPoint(const Tx& x, const Ty& y, const Tz& z) {
 }
 
 template<typename Tx, typename Ty>
-geometry_msgs::Point RosPoint(const Tx& x, const Ty& y) {
-  geometry_msgs::Point p;
+geometry_msgs::msg::Point RosPoint(const Tx& x, const Ty& y) {
+  geometry_msgs::msg::Point p;
   p.x = x;
   p.y = y;
   p.z = 0;
@@ -120,8 +119,8 @@ void SetIdentityRosQuaternion(RosVector* q) {
 }
 
 template <typename Derived>
-geometry_msgs::Point Eigen3DToRosPoint(const Eigen::DenseBase<Derived>& v) {
-  geometry_msgs::Point p;
+geometry_msgs::msg::Point Eigen3DToRosPoint(const Eigen::DenseBase<Derived>& v) {
+  geometry_msgs::msg::Point p;
   p.x = v[0];
   p.y = v[1];
   p.z = v[2];
@@ -129,8 +128,8 @@ geometry_msgs::Point Eigen3DToRosPoint(const Eigen::DenseBase<Derived>& v) {
 }
 
 template <typename Derived>
-geometry_msgs::Point Eigen2DToRosPoint(const Eigen::DenseBase<Derived>& v) {
-  geometry_msgs::Point p;
+geometry_msgs::msg::Point Eigen2DToRosPoint(const Eigen::DenseBase<Derived>& v) {
+  geometry_msgs::msg::Point p;
   p.x = v[0];
   p.y = v[1];
   p.z = 0;
@@ -140,7 +139,7 @@ geometry_msgs::Point Eigen2DToRosPoint(const Eigen::DenseBase<Derived>& v) {
 template <typename Derived>
 void DrawEigen2DLine(const Eigen::DenseBase<Derived>& v1,
                      const Eigen::DenseBase<Derived>& v2,
-                     visualization_msgs::Marker* msg) {
+                     visualization_msgs::msg::Marker* msg) {
   msg->points.push_back(Eigen2DToRosPoint<Derived>(v1));
   msg->points.push_back(Eigen2DToRosPoint<Derived>(v2));
 }
@@ -148,8 +147,8 @@ void DrawEigen2DLine(const Eigen::DenseBase<Derived>& v1,
 template <typename Derived>
 void DrawEigen2DLine(const Eigen::DenseBase<Derived>& v1,
                      const Eigen::DenseBase<Derived>& v2,
-                     const std_msgs::ColorRGBA& c,
-                     visualization_msgs::Marker* msg) {
+                     const std_msgs::msg::ColorRGBA& c,
+                     visualization_msgs::msg::Marker* msg) {
   msg->points.push_back(Eigen2DToRosPoint<Derived>(v1));
   msg->points.push_back(Eigen2DToRosPoint<Derived>(v2));
   msg->colors.push_back(c);
@@ -159,9 +158,9 @@ void DrawEigen2DLine(const Eigen::DenseBase<Derived>& v1,
 template <typename Derived>
 void DrawEigen2DLine(const Eigen::DenseBase<Derived>& v1,
                      const Eigen::DenseBase<Derived>& v2,
-                     const std_msgs::ColorRGBA& c1,
-                     const std_msgs::ColorRGBA& c2,
-                     visualization_msgs::Marker* msg) {
+                     const std_msgs::msg::ColorRGBA& c1,
+                     const std_msgs::msg::ColorRGBA& c2,
+                     visualization_msgs::msg::Marker* msg) {
   msg->points.push_back(Eigen2DToRosPoint<Derived>(v1));
   msg->points.push_back(Eigen2DToRosPoint<Derived>(v2));
   msg->colors.push_back(c1);
@@ -171,8 +170,8 @@ void DrawEigen2DLine(const Eigen::DenseBase<Derived>& v1,
 template <typename Vector2>
 void DrawCross(const Vector2& v,
               const float size,
-              const std_msgs::ColorRGBA& color,
-              visualization_msgs::Marker* msg) {
+              const std_msgs::msg::ColorRGBA& color,
+              visualization_msgs::msg::Marker* msg) {
   msg->points.push_back(Eigen2DToRosPoint(v - Vector2(size, size)));
   msg->points.push_back(Eigen2DToRosPoint(v + Vector2(size, size)));
   msg->points.push_back(Eigen2DToRosPoint(v - Vector2(size, -size)));
