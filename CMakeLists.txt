@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.14.4)
 
 PROJECT(amrl-shared-lib)
 
@@ -16,20 +16,31 @@ OPTION(GENERATE_SHARED_LIB_UNITTESTS,
 
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11")
 
-ADD_LIBRARY(${AMRL_LIBRARY_NAME}
-            util/helpers.cc
-            util/pthread_utils.cc
-            util/timer.cc
-            util/random.cc
-            util/serialization.cc
-            util/terminal_colors.cc)
+ADD_LIBRARY(${AMRL_LIBRARY_NAME} SHARED
+        util/helpers.cc
+        util/pthread_utils.cc
+        util/timer.cc
+        util/random.cc
+        util/serialization.cc
+        util/terminal_colors.cc)
 TARGET_LINK_LIBRARIES(${AMRL_LIBRARY_NAME} ${LIBS})
 
-ament_export_targets(${AMRL_LIBRARY_NAME} HAS_LIBRARY_TARGET)
+# Make headers available to consumers when building and after install
+target_include_directories(${AMRL_LIBRARY_NAME}
+  PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+    $<INSTALL_INTERFACE:include>)
+
+# Install the shared library and headers so colcon/ament installs can find them
 install(TARGETS ${AMRL_LIBRARY_NAME}
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin)
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+    RUNTIME DESTINATION bin)
+
+# Install headers (copy header files and subdirectories such as util/ and math/)
+install(DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/
+    DESTINATION include
+    FILES_MATCHING PATTERN "*.h" PATTERN "*.hpp" PATTERN "*.hh")
 
 IF(GENERATE_SHARED_LIB_UNITTESTS)
   ADD_EXECUTABLE(${AMRL_LIB_UNITTEST_NAME}
