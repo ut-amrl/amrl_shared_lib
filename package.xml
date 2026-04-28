@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
+<package format="3">
+  <name>amrl_shared_lib</name>
+  <version>0.1.0</version>
+  <description>Common AMRL C++ utilities (math, timing, helpers) packaged for ROS 2 workspaces.</description>
+  <maintainer email="amrl_robot@cs.utexas.edu">amrl_robot</maintainer>
+  <license>LGPL-3.0-or-later</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <!-- System deps: logging and threading -->
+  <depend>libgoogle-glog-dev</depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>
+
