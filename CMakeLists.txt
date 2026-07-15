@@ -1,44 +1,56 @@
 cmake_minimum_required(VERSION 3.16)
+project(amrl_shared_lib)
 
-PROJECT(amrl-shared-lib)
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+  set(CMAKE_CXX_STANDARD_REQUIRED ON)
+  set(CMAKE_CXX_EXTENSIONS OFF)
+endif()
 
-SET(CMAKE_INCLUDE_CURRENT_DIR ON)
+find_package(ament_cmake REQUIRED)
+find_package(Eigen3 REQUIRED)
 
-SET(LIBS glog pthread)
+# glog (which pulls in gflags) from the system package (libgoogle-glog-dev).
+find_library(GLOG_LIBRARY NAMES glog REQUIRED)
 
-SET(AMRL_LIBRARY_NAME "amrl_shared_lib"
-    CACHE STRING "Name of compiled library")
-SET(AMRL_LIB_UNITTEST_NAME "amrl_shared_lib_tests"
-    CACHE STRING "Name of compiled unit test executable")
-OPTION(GENERATE_SHARED_LIB_UNITTESTS,
-       "Option to enable generation of shared library unit tests"
-       OFF)
+# Build position-independent so this static lib can be linked into shared
+# objects (e.g. the motion_planner Python extension module).
+set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -std=c++11")
+add_library(${PROJECT_NAME}
+  util/helpers.cc
+  util/pthread_utils.cc
+  util/timer.cc
+  util/random.cc
+  util/serialization.cc
+  util/terminal_colors.cc)
 
-ADD_LIBRARY(${AMRL_LIBRARY_NAME}
-            util/helpers.cc
-            util/pthread_utils.cc
-            util/timer.cc
-            util/random.cc
-            util/serialization.cc
-            util/terminal_colors.cc)
-TARGET_LINK_LIBRARIES(${AMRL_LIBRARY_NAME} ${LIBS})
+# During the build the sources include their own headers as "util/..." / "math/..."
+# (repo root on the include path). For consumers we install the headers under a
+# "shared/" prefix so they resolve as "shared/math/..." (AMRL convention), while
+# the headers' own cross-includes ("math/..", "util/..") resolve via include/shared.
+target_include_directories(${PROJECT_NAME} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>
+  $<INSTALL_INTERFACE:include/shared>)
 
-IF(GENERATE_SHARED_LIB_UNITTESTS)
-  ADD_EXECUTABLE(${AMRL_LIB_UNITTEST_NAME}
-                tests/math/line2d_tests.cc
-                tests/math/math_tests.cc
-                tests/util/kdtree_tests.cc)
-  TARGET_LINK_LIBRARIES(${AMRL_LIB_UNITTEST_NAME}
-                        ${AMRL_LIBRARY_NAME}
-                        gtest
-                        gtest_main
-                        ${LIBS})
-ENDIF()
+target_link_libraries(${PROJECT_NAME} PUBLIC
+  Eigen3::Eigen
+  ${GLOG_LIBRARY}
+  pthread)
 
-install(TARGETS ${AMRL_LIBRARY_NAME}
+install(DIRECTORY math DESTINATION include/shared FILES_MATCHING PATTERN "*.h")
+install(DIRECTORY util DESTINATION include/shared FILES_MATCHING PATTERN "*.h")
+
+install(TARGETS ${PROJECT_NAME}
+  EXPORT export_${PROJECT_NAME}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
-)
+  INCLUDES DESTINATION include)
+
+ament_export_targets(export_${PROJECT_NAME} HAS_LIBRARY_TARGET)
+ament_export_include_directories(include include/shared)
+ament_export_dependencies(Eigen3)
+
+ament_package()

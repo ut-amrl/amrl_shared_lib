@@ -25,6 +25,7 @@
 #include <iostream>
 #include <limits>
 #include <utility>
+#include <vector>
 
 #include "eigen3/Eigen/Dense"
 #include "eigen3/Eigen/Geometry"
@@ -713,6 +714,33 @@ template <typename T>
 T ScalarProjection(const Eigen::Matrix<T, 2, 1>& vector1,
                    const Eigen::Matrix<T, 2, 1>& vector2) {
   return vector1.dot(vector2)/vector2.norm();
+}
+
+// Directed Hausdorff distance from polyline `from` to polyline `to`: the
+// maximum, over every vertex of `from`, of that vertex's closest distance to
+// the polyline `to` (i.e. the worst-case deviation of `from` off `to`). This is
+// the one-sided variant, appropriate when `to` is a longer reference path that
+// `from` is meant to track: the symmetric distance would be dominated by the
+// far tail of `to` and carry no discriminating signal. Returns +inf when `to`
+// is empty, and 0 when `from` is empty.
+template <typename T>
+T DirectedHausdorff(const std::vector<Eigen::Matrix<T, 2, 1>>& from,
+                    const std::vector<Eigen::Matrix<T, 2, 1>>& to) {
+  if (to.empty()) return std::numeric_limits<T>::infinity();
+  T worst = T(0);
+  for (const auto& p : from) {
+    T nearest;
+    if (to.size() == 1) {
+      nearest = (p - to.front()).norm();
+    } else {
+      nearest = std::numeric_limits<T>::infinity();
+      for (size_t i = 0; i + 1 < to.size(); ++i) {
+        nearest = std::min(nearest, DistanceFromLineSegment(p, to[i], to[i + 1]));
+      }
+    }
+    worst = std::max(worst, nearest);
+  }
+  return worst;
 }
 
 }  // namespace geometry
